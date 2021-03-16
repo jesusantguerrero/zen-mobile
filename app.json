@@ -1,0 +1,12 @@
+{
+  "name": "zen-mobile",
+  "displayName": "zen-mobile",
+  "expo": {
+    "name": "zen-mobile",
+    "slug": "zen-mobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
