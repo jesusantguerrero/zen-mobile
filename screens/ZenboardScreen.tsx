@@ -1,23 +1,25 @@
-import "react-native-gesture-handler"
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import ZenboardScreen from "./screens/ZenboardScreen";
-import LineupScreen from "./screens/LineupScreen";
 
-const Stack = createStackNavigator();
-export default function App() {
+export default function ZenboardScreen({ navigation }) {
   const [mode, setMode] = useState('zen');
 
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Zenboard" component={ZenboardScreen} />
-        <Stack.Screen name="Lineup" component={LineupScreen} options={{ title: "Line up"}} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <View style={{ flex: 5, justifyContent: "center", alignItems: "center" }}>
+        <View style={{ borderRadius: 100, backgroundColor: "red", width: 50, height: 50, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
+            <Text style={{ color: "white" }}> { mode } </Text>
+        </View>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity  onPress={() => setMode('zen')} style={styles.button}>
+          <Text> Zen </Text>
+        </TouchableOpacity>
+        <TouchableOpacity  onPress={() => navigation.navigate('Lineup') } style={styles.button}>
+          <Text> Lineup </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 

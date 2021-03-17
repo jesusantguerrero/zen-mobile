@@ -1,23 +1,23 @@
-import "react-native-gesture-handler"
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import ZenboardScreen from "./screens/ZenboardScreen";
-import LineupScreen from "./screens/LineupScreen";
 
-const Stack = createStackNavigator();
-export default function App() {
+export default function LineupScreen({ navigation }) {
   const [mode, setMode] = useState('zen');
 
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Zenboard" component={ZenboardScreen} />
-        <Stack.Screen name="Lineup" component={LineupScreen} options={{ title: "Line up"}} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <View style={{ flex: 5 }}>
+        <Text> { mode } </Text>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity  onPress={() => navigation.navigate('Zenboard')} style={styles.button}>
+          <Text> Zen </Text>
+        </TouchableOpacity>
+        <TouchableOpacity  onPress={() => setMode('lineup')} style={styles.button}>
+          <Text> Lineup </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
