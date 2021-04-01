@@ -1,14 +1,60 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, FlatList, Keyboard, TextInput, TouchableOpacity } from 'react-native';
+import { useTaskFirestore } from "../utils/useTaskFirestore";
+import styles from "./LineupStyles";
 
-export default function LineupScreen({ navigation }) {
+export default function LineupScreen({ navigation, extraData }) {
   const [mode, setMode] = useState('zen');
+  const [ todo, setTodo ] = useState([])
+  const [ schedule, setSchedule ] = useState([])
+  const { getTaskByMatrix } = useTaskFirestore(extraData)
+
+
+  const matrixFill = {
+    "todo": setTodo,
+    "schedule": setSchedule
+  }
+  const getMatrix = (matrix: string) => {
+      getTaskByMatrix(matrix).then((collectionRef) => {
+      const unsubscribe = collectionRef.onSnapshot((snap) => {
+        const results = [];
+        snap.forEach((doc) => {
+          results.push({ ...doc.data(), uid: doc.id });
+        });
+        matrixFill[matrix](results)
+      });
+  
+      return unsubscribe;
+    });
+  };
+
+  useEffect(() => { 
+      const todoRef = getMatrix("todo");
+      const scheduleRef = getMatrix("schedule");
+  }, [])
+
+  const renderEntity = ({ item, index }) => {
+    return (
+        <View style={styles.entityContainer}>
+            <Text style={styles.entityText}>
+                {index+1}. {item.title}
+            </Text>
+        </View>
+    )
+}
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5 }}>
-        <Text> { mode } </Text>
-      </View>
+      { todo && (
+          <View style={styles.listContainer}>
+              <FlatList
+                  data={todo}
+                  renderItem={renderEntity}
+                  keyExtractor={(item) => item.id}
+                  removeClippedSubviews={true}
+              />
+          </View>
+      )}
       <View style={styles.footer}>
         <TouchableOpacity  onPress={() => navigation.navigate('Zenboard')} style={styles.button}>
           <Text> Zen </Text>
@@ -21,37 +67,3 @@ export default function LineupScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    height: 20,
-    width: "100%"
-  },
-  button: {
-    width: 100,
-    minWidth: "48%",
-    color: "white",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    fontSize: 36
-  },
-  header: {
-    backgroundColor: "red",
-    borderBottomColor: "#333",
-    borderBottomWidth: 2,
-    height: 40,
-    fontSize: 24,
-    width: "100%"
-  }
-});

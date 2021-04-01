@@ -47,7 +47,9 @@ export default function App() {
               { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
             </Stack.Screen>
 
-            <Stack.Screen name="Lineup" component={LineupScreen} options={{ title: "Line up"}} extraData={user} />
+            <Stack.Screen name="Lineup">
+              { props => <LineupScreen {...props} extraData={user}></LineupScreen>}
+            </Stack.Screen>
           </>
         ) : (
           <>

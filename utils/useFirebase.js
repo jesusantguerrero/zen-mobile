@@ -1,10 +1,6 @@
-import firebase from "firebase/app";
+import  firebase from "firebase/firebase-app";
 import "firebase/auth";
 import "firebase/firestore";
-import "firebase/analytics";
-import "firebase/messaging";
-import "firebase/functions"
-import "firebase/performance"
 
 const firebaseConfig = {
     apiKey: "AIzaSyAbdYdOOW6GSl0upqGnClM_gENLHLhlDMQ",
@@ -20,10 +16,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig)
 }
-
-firebase.performance()
-firebase.analytics()
-
 
 export const register = async (email, password) => {
     return firebase.auth().createUserWithEmailAndPassword(email, password).catch(reason => {
