@@ -1,21 +1,60 @@
 import "react-native-gesture-handler"
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import ZenboardScreen from "./screens/ZenboardScreen";
 import LineupScreen from "./screens/LineupScreen";
+import LoginScreen from "./screens/Auth/LoginScreen";
+import RegistrationScreen from "./screens/Auth/RegistrationScreen";
+import { decode, encode } from "base-64";
+if (!global.btoa) {  global.btoa = encode }
+if (!global.atob) { global.atob = decode }
+import { firebase } from "./utils/useFirebase";
 
 const Stack = createStackNavigator();
+
+
 export default function App() {
   const [mode, setMode] = useState('zen');
+  const [isLoading, setIsLoading ] = useState(true);
+  const [user, setUser] = useState(null); 
 
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged( user => {
+      if (user) {
+        setUser(user)
+        setIsLoading(false);
+      } else {
+        setUser(null)
+        setIsLoading(false)
+      }
+    })
+  })
+
+  if (isLoading) {	
+    return (	
+      <></>	
+    )	
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Zenboard" component={ZenboardScreen} />
-        <Stack.Screen name="Lineup" component={LineupScreen} options={{ title: "Line up"}} />
+        { user ? (
+          <>
+            <Stack.Screen name="Zenboard">
+              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Stack.Screen>
+
+            <Stack.Screen name="Lineup" component={LineupScreen} options={{ title: "Line up"}} extraData={user} />
+          </>
+        ) : (
+          <>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Registration" component={RegistrationScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
