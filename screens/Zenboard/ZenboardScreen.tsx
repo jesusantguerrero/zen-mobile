@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
+import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { images } from "../../config/constants";
 
@@ -28,17 +29,14 @@ export default function ZenboardScreen({ navigation, extraData }) {
   };
 
   useEffect(() => { 
-      const todoRef = getMatrix("todo", setTodo);
+      return getMatrix("todo", setTodo);
   }, [])
-
 
   return (
     <ImageBackground source={images.temple} style={styles.container}>
       { !currentTask ? null : <TaskView task={currentTask} style={{}}></TaskView> }
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ borderRadius: 100, backgroundColor: "red", width: 50, height: 50, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
-            <Text style={{ color: "white" }}> Play </Text>
-        </View>
+        <TimeTracker></TimeTracker>
       </View>
       <TodoScroll items={todo} onPress={setCurrentTask}></TodoScroll>
     </ImageBackground>

@@ -10,7 +10,7 @@ export default function TaskView({ task, tracker }) {
             <Text style={{...styles.entityTitle, ...FONTS.h1,  color: 'white' }}>
                 {task.title}
             </Text>
-            <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: 'center' }}>
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: 'center'}}>
                 <TouchableHighlight>
                     <FontAwesome5 key="fa-home" name="edit" size={20} color="white"></FontAwesome5>
                 </TouchableHighlight>
@@ -23,7 +23,7 @@ export default function TaskView({ task, tracker }) {
             </View>
           </View>
 
-          <View style={{ flex: 6, flexDirection: "row", justifyContent: "flex-end"}}>
+          <View style={{ flex: 6, flexDirection: "row", justifyContent: "flex-end", marginTop: 24 }}>
             <Text style={{...styles.entityTitle, ...FONTS.body2,  color: 'white' }}>
                 {task.description}
             </Text>

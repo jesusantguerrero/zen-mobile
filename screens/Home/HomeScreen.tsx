@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import TodoScroll from "../components/TodoScroll";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
+import { useTaskFirestore } from "../../utils/useTaskFirestore";
 
 export default function ZenboardScreen({ navigation, extraData }) {
   const [mode, setMode] = useState('zen');
@@ -34,15 +33,6 @@ export default function ZenboardScreen({ navigation, extraData }) {
         <View style={{ borderRadius: 100, backgroundColor: "red", width: 50, height: 50, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
             <Text style={{ color: "white" }}> { mode } </Text>
         </View>
-      </View>
-      <TodoScroll items={todo}></TodoScroll>
-      <View style={styles.footer}>
-        <TouchableOpacity  onPress={() => setMode('zen')} style={styles.button}>
-          <Text> Zen </Text>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => navigation.navigate('Lineup') } style={styles.button}>
-          <Text> Lineup </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

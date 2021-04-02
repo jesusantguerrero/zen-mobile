@@ -1,6 +1,6 @@
 import Carousel from 'react-native-snap-carousel';
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet, Dimensions, Image, FlatList, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const SLIDER_WIDTH = Dimensions.get('window').width + 80
@@ -9,16 +9,15 @@ const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
 export default function TodoScroll({ items, onPress }) {
     const isCarousel = useRef(null)
-    console.log(items)
     const Slide = ({ item, index, onPress }) => {
         
         return (
-            <TouchableOpacity style={styles.container} key={index} onPress={onPress.bind(null, item)}>
+            <Pressable style={styles.container} key={index} onPress={onPress.bind(null, item)}>
                 <View>
                     <Text style={styles.header}>{item.title}</Text>
                     <Text style={styles.body}> {item.description} </Text>
                 </View>
-            </TouchableOpacity>
+            </Pressable>
         );
     }
     return (

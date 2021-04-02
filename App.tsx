@@ -4,12 +4,10 @@ import { StyleSheet } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ZenboardScreen from "./screens/Zenboard/ZenboardScreen";
-import LoginScreen from "./screens/Auth/LoginScreen";
+import { LoginScreen, RegistrationScreen, ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "./screens";
 // 
 import TabBarIcon from "./components/TabBarIcon";
 import TabBarIconSpecial from "./components/TabBarIconSpecial";
-import RegistrationScreen from "./screens/Auth/RegistrationScreen";
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -54,16 +52,16 @@ export default function App() {
       >
         { user ? (
           <>
-            <Tab.Screen name="Home" options={{
-              tabBarIcon: (props) => <TabBarIcon {...props} icon="home" label="Home"></TabBarIcon>
-            }}>
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Tab.Screen>
             <Tab.Screen name="Zenboard" options={{
                 tabBarIcon: (props) => <TabBarIcon {...props} icon="clock" label="Zen"></TabBarIcon>
             }}
             >
               { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Tab.Screen>
+            <Tab.Screen name="Home" options={{
+              tabBarIcon: (props) => <TabBarIcon {...props} icon="home" label="Overview"></TabBarIcon>
+            }}>
+              { props => <HomeScreen {...props} extraData={user}></HomeScreen>}
             </Tab.Screen>
             <Tab.Screen name="newItem" options={{
                 tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus"></TabBarIconSpecial>
@@ -73,12 +71,12 @@ export default function App() {
             <Tab.Screen name="Matrix" options={{
                 tabBarIcon: (props) => <TabBarIcon {...props} icon="border-all" label="Matrix"></TabBarIcon>
             }}>
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+              { props => <MatrixScreen {...props} extraData={user}></MatrixScreen>}
             </Tab.Screen>
             <Tab.Screen name="Metrics" options={{
                 tabBarIcon: (props) => <TabBarIcon {...props} icon="chart-line" label="Metrics"></TabBarIcon>
             }}>
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+              { props => <MetricsScreen {...props} extraData={user}></MetricsScreen>}
             </Tab.Screen>
           </>
         ) : (
