@@ -4,7 +4,7 @@ import { Duration, Interval, DateTime } from "luxon";
 import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"
 
-export default function TimeTracker({ task, currentTimer}) {
+export default function TimeTracker({ task}) {
     const [track, setTrack] = useState({
         uid: null,
         task_uid: null,

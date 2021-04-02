@@ -12,6 +12,9 @@ import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 import { firebase } from "./utils/useFirebase";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import HomeNavigator from "./navigators/home";
+import AuthNavigator from "./navigators/auth";
 
 const Tab = createBottomTabNavigator();
 
@@ -40,53 +43,11 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-          tabBarOptions={{
-            showLabel: false,
-            style: {
-              bottom: 0,
-              height: 60
-            }
-          }}
-      >
-        { user ? (
-          <>
-            <Tab.Screen name="Zenboard" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="clock" label="Zen"></TabBarIcon>
-            }}
-            >
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Home" options={{
-              tabBarIcon: (props) => <TabBarIcon {...props} icon="home" label="Overview"></TabBarIcon>
-            }}>
-              { props => <HomeScreen {...props} extraData={user}></HomeScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="newItem" options={{
-                tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus"></TabBarIconSpecial>
-            }}>
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Matrix" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="border-all" label="Matrix"></TabBarIcon>
-            }}>
-              { props => <MatrixScreen {...props} extraData={user}></MatrixScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Metrics" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="chart-line" label="Metrics"></TabBarIcon>
-            }}>
-              { props => <MetricsScreen {...props} extraData={user}></MetricsScreen>}
-            </Tab.Screen>
-          </>
-        ) : (
-          <>
-          <Tab.Screen name="Login" component={LoginScreen} />
-          <Tab.Screen name="Registration" component={RegistrationScreen} />
-          </>
-        )}
-      </Tab.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+          { user ? <HomeNavigator user={user}></HomeNavigator> : <AuthNavigator></AuthNavigator>}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
