@@ -1,8 +1,32 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import TodoScroll from "../../components/TodoScroll";
+import { useTaskFirestore } from "../../utils/useTaskFirestore";
 
-export default function ZenboardScreen({ navigation }) {
+export default function ZenboardScreen({ navigation, extraData }) {
   const [mode, setMode] = useState('zen');
+
+  const [ todo, setTodo ] = useState([])
+  const { getTaskByMatrix } = useTaskFirestore(extraData)
+
+  
+  const getMatrix = (matrix: string, callback) => {
+      getTaskByMatrix(matrix).then((collectionRef) => {
+      const unsubscribe = collectionRef.onSnapshot((snap) => {
+        const results = [];
+        snap.forEach((doc) => {
+          results.push({ ...doc.data(), uid: doc.id });
+        });
+        callback(results)
+      });
+  
+      return unsubscribe;
+    });
+  };
+
+  useEffect(() => { 
+      const todoRef = getMatrix("todo", setTodo);
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -11,6 +35,7 @@ export default function ZenboardScreen({ navigation }) {
             <Text style={{ color: "white" }}> { mode } </Text>
         </View>
       </View>
+      <TodoScroll items={todo}></TodoScroll>
       <View style={styles.footer}>
         <TouchableOpacity  onPress={() => setMode('zen')} style={styles.button}>
           <Text> Zen </Text>

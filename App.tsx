@@ -3,16 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import ZenboardScreen from "./screens/ZenboardScreen";
-import LineupScreen from "./screens/LineupScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import ZenboardScreen from "./screens/Zenboard/ZenboardScreen";
 import LoginScreen from "./screens/Auth/LoginScreen";
+// 
+import TabBarIcon from "./components/TabBarIcon";
+import TabBarIconSpecial from "./components/TabBarIconSpecial";
 import RegistrationScreen from "./screens/Auth/RegistrationScreen";
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 import { firebase } from "./utils/useFirebase";
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 
 export default function App() {
@@ -40,24 +43,51 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Tab.Navigator
+          tabBarOptions={{
+            showLabel: false,
+            style: {
+              bottom: 0,
+              height: 60
+            }
+          }}
+      >
         { user ? (
           <>
-            <Stack.Screen name="Zenboard">
+            <Tab.Screen name="Home" options={{
+              tabBarIcon: (props) => <TabBarIcon {...props} icon="home" label="Home"></TabBarIcon>
+            }}>
               { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Stack.Screen>
-
-            <Stack.Screen name="Lineup">
-              { props => <LineupScreen {...props} extraData={user}></LineupScreen>}
-            </Stack.Screen>
+            </Tab.Screen>
+            <Tab.Screen name="Zenboard" options={{
+                tabBarIcon: (props) => <TabBarIcon {...props} icon="clock" label="Zen"></TabBarIcon>
+            }}
+            >
+              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Tab.Screen>
+            <Tab.Screen name="newItem" options={{
+                tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus"></TabBarIconSpecial>
+            }}>
+              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Tab.Screen>
+            <Tab.Screen name="Matrix" options={{
+                tabBarIcon: (props) => <TabBarIcon {...props} icon="border-all" label="Matrix"></TabBarIcon>
+            }}>
+              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Tab.Screen>
+            <Tab.Screen name="Metrics" options={{
+                tabBarIcon: (props) => <TabBarIcon {...props} icon="chart-line" label="Metrics"></TabBarIcon>
+            }}>
+              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
+            </Tab.Screen>
           </>
         ) : (
           <>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Registration" component={RegistrationScreen} />
+          <Tab.Screen name="Login" component={LoginScreen} />
+          <Tab.Screen name="Registration" component={RegistrationScreen} />
           </>
         )}
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }

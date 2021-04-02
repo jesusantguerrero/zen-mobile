@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Keyboard, TextInput, TouchableOpacity } from 'react-native';
-import { useTaskFirestore } from "../utils/useTaskFirestore";
+import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import styles from "./LineupStyles";
+import TaskItem from "../../components/TaskItem";
 
 export default function LineupScreen({ navigation, extraData }) {
-  const [mode, setMode] = useState('zen');
   const [ todo, setTodo ] = useState([])
   const [ schedule, setSchedule ] = useState([])
   const { getTaskByMatrix } = useTaskFirestore(extraData)
@@ -14,6 +14,7 @@ export default function LineupScreen({ navigation, extraData }) {
     "todo": setTodo,
     "schedule": setSchedule
   }
+  
   const getMatrix = (matrix: string) => {
       getTaskByMatrix(matrix).then((collectionRef) => {
       const unsubscribe = collectionRef.onSnapshot((snap) => {
@@ -33,23 +34,25 @@ export default function LineupScreen({ navigation, extraData }) {
       const scheduleRef = getMatrix("schedule");
   }, [])
 
-  const renderEntity = ({ item, index }) => {
-    return (
-        <View style={styles.entityContainer}>
-            <Text style={styles.entityText}>
-                {index+1}. {item.title}
-            </Text>
-        </View>
-    )
-}
-
   return (
     <View style={styles.container}>
       { todo && (
           <View style={styles.listContainer}>
+              <Text style={{color:'#34D399', fontWeight: "bold"}}> Todo </Text>
               <FlatList
                   data={todo}
-                  renderItem={renderEntity}
+                  renderItem={TaskItem}
+                  keyExtractor={(item) => item.id}
+                  removeClippedSubviews={true}
+              />
+          </View>
+      )}
+      { schedule && (
+          <View style={styles.listContainer}>
+              <Text style={{color:'#60A5FA', fontWeight: "bold"}}> Schedule </Text>
+              <FlatList
+                  data={schedule}
+                  renderItem={TaskItem}
                   keyExtractor={(item) => item.id}
                   removeClippedSubviews={true}
               />
