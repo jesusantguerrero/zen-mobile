@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { images, FONTS, SIZES } from "../config/constants";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function AppHeader({ navigation, user }) {
     const [ profileData, setProfileData ] = useState({
@@ -29,7 +30,7 @@ export default function AppHeader({ navigation, user }) {
         justifyContent: "space-between", 
         flexDirection: "row", 
         width: "100%", 
-        maxHeight: 110,
+        maxHeight: 90,
         padding: SIZES.padding
       }}>
         <Text style={{...FONTS.brand, color: 'white'}}>Zen.</Text>
@@ -44,7 +45,7 @@ export default function AppHeader({ navigation, user }) {
             alignItems: 'center' 
           }}
         > 
-          <Text> {profileData.initials} </Text>
+          <FontAwesome5  name="user" size={14} color="black"></FontAwesome5>
         </TouchableOpacity>
       </View>)
 }

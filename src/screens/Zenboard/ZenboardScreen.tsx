@@ -4,16 +4,15 @@ import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
 import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { images, SIZES } from "../../config/constants";
+import { images, SIZES, FONTS } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 
 export default function ZenboardScreen({ navigation, extraData }) {
   const [currentTask, setCurrentTask] = useState(null);
-
+  const [showLineUp, setShowLineUp] = useState(false);
   const [ todo, setTodo ] = useState([])
   const { getTaskByMatrix } = useTaskFirestore(extraData)
 
-  
   const getMatrix = (matrix: string, callback) => {
       getTaskByMatrix(matrix).then((collectionRef) => {
       const unsubscribe = collectionRef.onSnapshot((snap) => {
@@ -35,7 +34,7 @@ export default function ZenboardScreen({ navigation, extraData }) {
 
   return (
     <ImageBackground source={images.temple} style={styles.container}>
-      <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .5, marginBottom: 15, position: 'absolute'}} />
+      <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .5, position: 'absolute'}} />
       <AppHeader navigation={navigation} user={extraData}></AppHeader>
       <View style={{width: '100%', padding: SIZES.padding}}>
         <TaskView task={currentTask}></TaskView>
@@ -43,7 +42,10 @@ export default function ZenboardScreen({ navigation, extraData }) {
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250 }}>
         <TimeTracker task={currentTask} onPomodoroStarted="" onPomodoroStoped=""></TimeTracker>
       </View>
-      <TodoScroll items={todo} onPress={setCurrentTask}></TodoScroll>
+      <TouchableOpacity style={{ marginBottom: 10}} onPress={() => setShowLineUp(!showLineUp)}>
+        <Text style={{ ...FONTS.h2}}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
+      </TouchableOpacity>
+      {!showLineUp ? null : <TodoScroll items={todo} onPress={setCurrentTask}></TodoScroll>}
     </ImageBackground>
   );
 }
@@ -54,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
     tintColor: "#000"
   },
   footer: {

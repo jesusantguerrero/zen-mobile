@@ -2,14 +2,14 @@ import "react-native-gesture-handler"
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
-import { COLORS } from "./config/constants"; 
+import { COLORS } from "./src/config/constants"; 
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
-import { firebase } from "./utils/useFirebase";
+import { firebase } from "./src/utils/useFirebase";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import HomeNavigator from "./navigators/home";
-import AuthNavigator from "./navigators/auth";
+import HomeNavigator from "./src/navigators/home";
+import AuthNavigator from "./src/navigators/auth";
 import {useFonts, Roboto_400Regular, Roboto_900Black, Roboto_700Bold } from "@expo-google-fonts/roboto"
 
 export default function App() {
@@ -20,7 +20,7 @@ export default function App() {
     Roboto_400Regular,
     Roboto_900Black,
     Roboto_700Bold,
-    'Potta_One': require('./assets/fonts/PottaOne-Regular.ttf'),
+    'Potta_One': require('./src/assets/fonts/PottaOne-Regular.ttf'),
   })
 
   useEffect(() => {

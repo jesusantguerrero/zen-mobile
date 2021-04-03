@@ -26,7 +26,8 @@ export default function TodoScroll({ items, onPress }) {
                         flexDirection: 'row',
                         alignItems: 'center',
                         width: '100%',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        height: 40
                       }}>
                         <View style={{
                             backgroundColor: COLORS.green[400], 
@@ -41,12 +42,15 @@ export default function TodoScroll({ items, onPress }) {
                         </View>
                         <Text style={{ ...styles.header, color: COLORS.gray[500]}}>{item.title}</Text>
                       </View>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
-                        <Text style={{ ...styles.bodyText, color: COLORS.gray[400]}}>{item.duration_ms}</Text>
-                        <Text style={{ ...styles.bodyText, color: COLORS.blue[400], marginLeft: 5, 
-                          fontWeight: 'bold'}}>{item.due_date}
-                        </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', height: 40 }}>
+                      <View style={{ flexDirection: 'row'}}>
+                        <FontAwesome5 key="fa-home" name="stopwatch" size={16} color="white"></FontAwesome5>
+                        <Text style={{ ...styles.bodyText, color: COLORS.gray[400], marginLeft: 5 }}>{item.duration_ms}</Text>
                       </View>
+                    </View>
+                </View>
+                <View style={{ flex: 1, paddingHorizontal: SIZES.padding }}>
+                  <Text style={{ color: item.description ? 'white' : COLORS.primary }}> { item.description || 'No Description provided' }</Text>
                 </View>
                 <View style={{ 
                   backgroundColor: 'white', 
@@ -58,12 +62,14 @@ export default function TodoScroll({ items, onPress }) {
                   paddingVertical: 8
                 }}>
                   <TouchableOpacity style={{ flexDirection: 'row' }}>
-                    <FontAwesome5 key="fa-home" name="edit" size={20} color="white"></FontAwesome5>
-                    <Text style={styles.body}> Edit </Text>
+                    <FontAwesome5  name="check-circle" size={14} color="black"></FontAwesome5>
+                    <Text style={{...styles.body, marginLeft: 3 }}> Mark as done </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{ flexDirection: 'row' }}>
-                    <FontAwesome5  name="check-circle" size={20} color="white"></FontAwesome5>
-                    <Text style={styles.body}> Mark as done </Text>
+            
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', }}>
+                        <FontAwesome5 key="fa-home" name="calendar" size={14} color={COLORS.blue[400]}></FontAwesome5>
+                        <Text style={{ ...styles.bodyText, color: COLORS.blue[400], marginLeft: 5}}>{item.due_date || 'Set due date'}
+                        </Text>
                   </TouchableOpacity>
                 </View>
             </Pressable>
@@ -90,6 +96,7 @@ const styles = StyleSheet.create({
       marginRight: 15,
       height: 150,
       shadowColor: "#000",
+      overflow: 'hidden',
       shadowOffset: {
         width: 0,
         height: 3,
@@ -111,7 +118,7 @@ const styles = StyleSheet.create({
     },
     bodyText: {
       color: "#222",
-      fontSize: 18
+      fontSize: 14
     },
     body: {
       color: "#222",

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "505825563328",
+    "firebase_url": "https://appzen-367e1-default-rtdb.firebaseio.com",
+    "project_id": "appzen-367e1",
+    "storage_bucket": "appzen-367e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:505825563328:android:8783c3bf5c4b4690cd1325",
+        "android_client_info": {
+          "package_name": "com.insanecode.zen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "505825563328-878d7el2iokoipm7jp060tqvmp4u88o3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeKppEt-dAIZlh-Z76nb8yD4UQfogouuw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "505825563328-878d7el2iokoipm7jp060tqvmp4u88o3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

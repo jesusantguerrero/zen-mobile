@@ -155,7 +155,7 @@ export default function TimeTracker({ task}) {
         clearTrack();
         if (state.timer) {
             clearInterval(state.timer);
-            setState({...state, now: null });
+            setState({...state, now: null, timer: null });
         }   
     };
     
