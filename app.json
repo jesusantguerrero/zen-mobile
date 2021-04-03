@@ -1,15 +1,29 @@
 {
-  "name": "zen-mobile",
-  "displayName": "zen-mobile",
+  "name": "zenboard",
+  "displayName": "zen",
   "expo": {
-    "name": "zen-mobile",
-    "slug": "zen-mobile",
+    "name": "zen",
+    "slug": "zen",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
     ],
+    "splash": {
+      "image": "./assets/logo.png",
+      "backgroundColor": "#3a4a73",
+      "resizeMode": "contain",
+      "size": 24
+    },
     "android": {
-      "package": "com.insanecode.zen"
+      "userInterfaceStyle": "light",
+      "package": "com.insanecode.zen",
+      "googleServicesFile": ".expo/google-services.json",
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "3E71E56E4332BE8100F3B53E87F76A687F3AD5D1",
+          "apiKey" : "AIzaSyCeKppEt-dAIZlh-Z76nb8yD4UQfogouuw"
+        }
+      }
     }
   }
 }

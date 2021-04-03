@@ -6,8 +6,8 @@ import { FONTS, COLORS, SIZES, theme } from "../config/constants";
 export default function TaskView({ task, tracker }) {
     return (
         <View style={styles.container}>
-          <View style={{ flex: 1 , justifyContent: "space-between", flexDirection: "row", width: '100%', alignItems: 'center' }}>
-            <Text style={{...styles.entityTitle, ...FONTS.h1,  color: 'white' }}>
+          { !task ? null : <View style={{ flex: 1 , justifyContent: "space-between", flexDirection: "row", width: '100%', alignItems: 'center' }}>
+            <Text style={{ ...FONTS.h1,  color: 'white' }}>
                 {task.title}
             </Text>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: 'center'}}>
@@ -21,13 +21,13 @@ export default function TaskView({ task, tracker }) {
                     {task.due_date}
                 </Text>
             </View>
-          </View>
+          </View>}
 
-          <View style={{ flex: 6, flexDirection: "row", justifyContent: "flex-end", marginTop: 24 }}>
-            <Text style={{...styles.entityTitle, ...FONTS.body2,  color: 'white' }}>
-                {task.description}
+          { !task ? null : <View style={{ flex: 6, flexDirection: "row", marginTop: 10 }}>
+            <Text style={{...FONTS.body3,  color: 'white', textAlign: 'left' }}>
+                {task.description.trim()}
             </Text>
-          </View>
+          </View>}
         </View>
     )
 }
@@ -36,14 +36,11 @@ export default function TaskView({ task, tracker }) {
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        padding: SIZES.padding,
+        height: 100,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         overflow: 'hidden',
-        height: 100
-    },
-    entityTitle: {
-        fontSize: 14,
-        color: '#707070',
-        marginRight: 5
+        padding: SIZES.padding,
+        borderRadius: SIZES.radius
     },
     entityText: {
         fontSize: 14,

@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { login } from "../../utils/useFirebase";
+import { login, loginWithProvider, firebase } from "../../utils/useFirebase";
+import * as GoogleSignIn from 'expo-google-sign-in';
+import * as Google from 'expo-google-app-auth';
+import { WEB_CLIENT_ID } from '../../utils/keys';
 import styles from './styles';
 
 export default function LoginScreen({navigation}) {
@@ -12,10 +15,55 @@ export default function LoginScreen({navigation}) {
         navigation.navigate('Registration')
     }
 
+    const configureGoogleSign = async () => {
+        await GoogleSignIn.initAsync({
+            clientId: WEB_CLIENT_ID
+        });
+        await GoogleSignIn.signInSilentlyAsync();
+    }
+
     const onLoginPress = () => {
         login(email, password).then(({ user }) => {
             navigation.navigate('Zenboard', {user: user})
         })
+    }
+
+    const onLoginCustomPressL = async() => {
+        try {
+            const { type, user } = await GoogleSignIn.signInAsync();
+
+            if (type === 'success') {
+                const accessToken  = user?.auth?.accessToken
+                const idToken =  user?.auth?.idToken
+                const credential = firebase.auth().GoogleAuthProvider.credential(idToken, accessToken)
+                await firebase.auth().signInWithCredential(credential)
+              } else {
+                return alert('error');
+              }
+        } catch (error) {
+            console.log('Something else went wrong... ', error.toString())
+        }
+    }
+
+    const onLoginCustomPress = async() => {
+            try {
+                const result = await Google.logInAsync({
+                    // androidStandaloneAppClientId: WEB_CLIENT_ID,
+                    clientId: WEB_CLIENT_ID,
+                    androidClientId: WEB_CLIENT_ID,
+                });
+
+                if (result.type === 'success') {
+                    const accessToken  = result.accessToken
+                    const idToken =  result.idToken
+                    const credential = firebase.auth().GoogleAuthProvider.credential(idToken, accessToken)
+                    await firebase.auth().signInWithCredential(credential)
+                  } else {
+                    return alert('error');
+                  }
+            } catch (error) {
+                console.log('Something else went wrong... ', error.toString())
+            }
     }
 
     return (
@@ -46,6 +94,11 @@ export default function LoginScreen({navigation}) {
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
                 />
+                <TouchableOpacity
+                    style={styles.googleButton}
+                    onPress={() => onLoginCustomPress()}>
+                    <Text style={styles.buttonTitle}>Login with Google</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => onLoginPress()}>

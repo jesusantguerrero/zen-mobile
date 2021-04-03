@@ -53,16 +53,16 @@ export const SIZES = {
 }
 
 export const FONTS = {
-    brand: { fontFamily: "Roboto-Black", fontSize: SIZES.h1, lineHeight: 36 },
-    h1: { fontFamily: "Roboto-Black", fontSize: SIZES.h1, lineHeight: 36 },
-    h2: { fontFamily: "Roboto-Bold", fontSize: SIZES.h1, lineHeight: 30 },
-    h3: { fontFamily: "Roboto-Bold", fontSize: SIZES.h1, lineHeight: 22 },
-    h4: { fontFamily: "Roboto-Bold", fontSize: SIZES.h1, lineHeight: 22 },
-    body1: { fontFamily: "Roboto-Regular", fontSize: SIZES.body1, lineHeight: 30 },
-    body2: { fontFamily: "Roboto-Regular", fontSize: SIZES.body2, lineHeight: 22 },
-    body3: { fontFamily: "Roboto-Regular", fontSize: SIZES.body3, lineHeight: 22 },
-    body4: { fontFamily: "Roboto-Regular", fontSize: SIZES.body4, lineHeight: 16 },
-    body4: { fontFamily: "Roboto-Regular", fontSize: SIZES.body5, lineHeight: 14 }
+    brand: { fontFamily: "Potta_One", fontSize: SIZES.h1, lineHeight: 36 },
+    h1: { fontFamily: "Roboto_900Black", fontSize: SIZES.h1, lineHeight: 36 },
+    h2: { fontFamily: "Roboto_700Bold", fontSize: SIZES.h2, lineHeight: 30 },
+    h3: { fontFamily: "Roboto_700Bold", fontSize: SIZES.h3, lineHeight: 22 },
+    h4: { fontFamily: "Roboto_700Bold", fontSize: SIZES.h4, lineHeight: 22 },
+    body1: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body1, lineHeight: 30 },
+    body2: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body2, lineHeight: 22 },
+    body3: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body3, lineHeight: 22 },
+    body4: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body4, lineHeight: 16 },
+    body4: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body5, lineHeight: 14 }
 }
 
 export const SHADOWS = {

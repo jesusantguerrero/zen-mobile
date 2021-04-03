@@ -6,10 +6,9 @@ export default StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: "#4F5B7A",
-        color: "white"
-    },
-    title: {
-
+        justifyContent: 'center',
+        alignContent: 'center',
+        color: "white",
     },
     logo: {
         flex: 1,
@@ -17,7 +16,6 @@ export default StyleSheet.create({
         width: 70,
         alignSelf: "center",
         margin: 30,
-        border: "2px solid white",
         borderRadius: 10
     },
     input: {
@@ -33,7 +31,20 @@ export default StyleSheet.create({
     },
     button: {
         backgroundColor: '#059669',
-        border: "2px solid white",
+        borderWidth: 2,
+        borderColor: "white",
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 20,
+        height: 48,
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: 'center'
+    },
+    googleButton: {
+        backgroundColor: '#06f',
+        borderWidth: 2,
+        borderColor: "white",
         marginLeft: 30,
         marginRight: 30,
         marginTop: 20,

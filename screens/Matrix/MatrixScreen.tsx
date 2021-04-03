@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
+import AppHeader from '../../components/AppHeader';
+import TaskGroup from '../../components/TaskGroup';
+import { ScrollView } from 'react-native-gesture-handler';
 
-export default function ZenboardScreen({ navigation, extraData }) {
+export default function MatrixScreen({ navigation, extraData }) {
   const [mode, setMode] = useState('zen');
 
-  const [ todo, setTodo ] = useState([])
-  const { getTaskByMatrix } = useTaskFirestore(extraData)
+  const [ todo, setTodo ] = useState([]);
+  const [ selectedList, setSelectedList] = useState([]);
+  const [ selectedMatrix, setSelectedMatrix] = useState({});
+  const { getTaskByMatrix } = useTaskFirestore(extraData);
 
   
   const getMatrix = (matrix: string, callback) => {
@@ -23,17 +29,117 @@ export default function ZenboardScreen({ navigation, extraData }) {
     });
   };
 
+  const [matrix, setMatrix] = useState({
+    todo: {
+      label: 'Todo',
+      color: COLORS.green[400],
+      list: todo
+    },
+    schedule: {
+      label: 'Schedule',
+      color: COLORS.blue[400],
+      list: todo
+    },
+    delegate: {
+      label: 'Delegate',
+      color: COLORS.yellow[400],
+      list: todo
+    },
+    delete: {
+      label: 'Delete',
+      color: COLORS.red[400],
+      select: todo
+    }
+  })
+
   useEffect(() => { 
       const todoRef = getMatrix("todo", setTodo);
   }, [])
 
+  const selectMatrix = (matrixName: string) => {
+    const selectedMatrix = matrix[matrixName];
+    if (selectedMatrix) {
+      setSelectedList(todo)
+      setSelectedMatrix(selectedMatrix)
+    }
+  }
+
+  const MatrixHeader = () => {
+    return (
+      <View
+        style={{
+          width: "100%",
+          height: 200,
+          position: 'relative',
+          ...SHADOWS.shadow1
+        }}
+      >
+        <ImageBackground source={images.zenTemple} style={styles.container}>
+          <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .6, marginBottom: 15, position: 'absolute'}} />
+          <AppHeader navigation={navigation} user={extraData}></AppHeader>
+          <View style={{
+            marginTop: 16,
+            width: '100%',
+            paddingHorizontal: SIZES.padding,
+            position: 'absolute',
+            bottom: '-35%',
+            elevation: 9,
+            zIndex: 10,
+          }}>
+            <Text style={{ color: 'white'}}> Eisenhower Matrix</Text>
+            <View
+              style={{
+                flex: 2,
+                flexDirection: 'row',
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignContent: 'space-around',
+                marginTop: 8
+              }}
+            >
+              {Object.entries(matrix).map(([listName, list]) => {
+                return (
+                  <TouchableOpacity style={{
+                    backgroundColor: list.color,
+                    marginBottom: 14,
+                    width: '48%',
+                    height: 70,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: SIZES.radius,
+                    ...SHADOWS.shadow1
+                  }}
+                  key={listName}
+                  onPress={() => selectMatrix(listName)}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}> {list.label} </Text>
+                  </TouchableOpacity>
+                )
+              })}
+
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      <View style={{ flex: 5, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ borderRadius: 100, backgroundColor: "red", width: 50, height: 50, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
-            <Text style={{ color: "white" }}> Matrix </Text>
-        </View>
-      </View>
+      <MatrixHeader></MatrixHeader>
+      <ScrollView style={{
+          marginTop: 100,
+          paddingBottom: 30,
+      }}>
+        <TaskGroup
+          label={selectedMatrix.label}
+          tasks={selectedList}
+          color={selectedMatrix.color}
+          onPress={() => console.log('hola')}
+        >
+        </TaskGroup>
+      </ScrollView>
     </View>
   );
 }
@@ -42,33 +148,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#fff'
   },
-  footer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    height: 20,
-    width: "100%"
-  },
-  button: {
-    width: 100,
-    minWidth: "48%",
-    color: "white",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    fontSize: 36
-  },
-  header: {
-    backgroundColor: "red",
-    borderBottomColor: "#333",
-    borderBottomWidth: 2,
-    height: 40,
-    fontSize: 24,
-    width: "100%"
-  }
 });

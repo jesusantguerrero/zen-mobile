@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { SIZES, FONTS } from "../config/constants";
@@ -8,7 +8,6 @@ import {  ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../scr
 import TabBarIcon from "../components/TabBarIcon";
 import TabBarIconSpecial from "../components/TabBarIconSpecial";
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
 import { logout } from "../utils/useFirebase";
 
 const Tab = createBottomTabNavigator();
@@ -37,17 +36,22 @@ export default function HomeNavigator({ user }) {
                         alignItems: 'center'
                     }}
                     > 
-                        <FontAwesome5 icon='times' key="times" size={24} color='white'></FontAwesome5>
+                      <FontAwesome5 name='times' key="times" size={16} color='white'></FontAwesome5>
                     </TouchableOpacity>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Button onPress={() => logout()} title="Logout" />
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 50 }}>
+                    <Pressable 
+                      style={{ backgroundColor: 'red', width: '100%', height: 50, alignItems: 'center', justifyContent: 'center' }} 
+                      onPress={() => logout()}>
+                      <Text style={{ ...FONTS.h2 }}> Logout </Text>
+                    </Pressable>
                 </View>
             </View>
         );
     }
     function MainStackScreen () {
       return (<Tab.Navigator
+          // initialRouteName="Matrix"
           tabBarOptions={{
             showLabel: false,
             style: {
@@ -68,7 +72,7 @@ export default function HomeNavigator({ user }) {
               { props => <HomeScreen {...props} extraData={user}></HomeScreen>}
             </Tab.Screen>
             <Tab.Screen name="newItem" options={{
-                tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus"></TabBarIconSpecial>
+                tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus" label=''></TabBarIconSpecial>
             }}>
               { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
             </Tab.Screen>
@@ -87,11 +91,7 @@ export default function HomeNavigator({ user }) {
             
       return (
         <RootStack.Navigator mode='modal'>
-            <RootStack.Screen 
-                name='main' 
-                component={MainStackScreen} 
-                options={{ headerShown: false}}>
-            </RootStack.Screen>
+            <RootStack.Screen name='main' component={MainStackScreen} options={{ headerShown: false}}></RootStack.Screen>
             <RootStack.Screen name='MyModal' component={ModalScreen}  options={{ headerShown: false}}></RootStack.Screen>
         </RootStack.Navigator>
       )
