@@ -9,7 +9,7 @@
       "**/*"
     ],
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./src/assets/logo.png",
       "backgroundColor": "#3a4a73",
       "resizeMode": "contain",
       "size": 24
@@ -17,7 +17,7 @@
     "android": {
       "userInterfaceStyle": "light",
       "package": "com.insanecode.zen",
-      "googleServicesFile": ".expo/google-services.json",
+      "googleServicesFile": "./android/app/google-services.json",
       "config": {
         "googleSignIn": {
           "certificateHash": "3E71E56E4332BE8100F3B53E87F76A687F3AD5D1",
