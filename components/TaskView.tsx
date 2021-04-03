@@ -7,7 +7,7 @@ export default function TaskView({ task, tracker }) {
     return (
         <View style={styles.container}>
           { !task ? null : <View style={{ flex: 1 , justifyContent: "space-between", flexDirection: "row", width: '100%', alignItems: 'center' }}>
-            <Text style={{ ...FONTS.h1,  color: 'white' }}>
+            <Text style={{ ...FONTS.h5,  color: 'white' }}>
                 {task.title}
             </Text>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: 'center'}}>

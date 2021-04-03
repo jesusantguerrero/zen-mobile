@@ -4,7 +4,7 @@ import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
 import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { images } from "../../config/constants";
+import { images, SIZES } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 
 export default function ZenboardScreen({ navigation, extraData }) {
@@ -37,7 +37,7 @@ export default function ZenboardScreen({ navigation, extraData }) {
     <ImageBackground source={images.temple} style={styles.container}>
       <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .5, marginBottom: 15, position: 'absolute'}} />
       <AppHeader navigation={navigation} user={extraData}></AppHeader>
-      <View style={{width: '99%'}}>
+      <View style={{width: '100%', padding: SIZES.padding}}>
         <TaskView task={currentTask}></TaskView>
       </View>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250 }}>

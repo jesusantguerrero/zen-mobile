@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../config/constants';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const SLIDER_WIDTH = Dimensions.get('window').width + 80
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
@@ -17,7 +18,7 @@ export default function TodoScroll({ items, onPress }) {
                       width: '100%',
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      alignItems: 'center'
+                      paddingHorizontal: SIZES.padding,
                     }}
                   >
                     <View style={{
@@ -47,7 +48,24 @@ export default function TodoScroll({ items, onPress }) {
                         </Text>
                       </View>
                 </View>
-                <Text style={styles.body}> {item.description} </Text>
+                <View style={{ 
+                  backgroundColor: 'white', 
+                  paddingHorizontal: SIZES.padding, 
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  paddingVertical: 8
+                }}>
+                  <TouchableOpacity style={{ flexDirection: 'row' }}>
+                    <FontAwesome5 key="fa-home" name="edit" size={20} color="white"></FontAwesome5>
+                    <Text style={styles.body}> Edit </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flexDirection: 'row' }}>
+                    <FontAwesome5  name="check-circle" size={20} color="white"></FontAwesome5>
+                    <Text style={styles.body}> Mark as done </Text>
+                  </TouchableOpacity>
+                </View>
             </Pressable>
         );
     }
@@ -65,22 +83,19 @@ export default function TodoScroll({ items, onPress }) {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: 'white',
+      backgroundColor: "rgba(0,0,0, .5)",
       borderRadius: 8,
       width: windowWidth - 30,
       marginLeft: 15,
       marginRight: 15,
       height: 150,
-      justifyContent: "center",
-      paddingBottom: 40,
-      paddingHorizontal: SIZES.padding,
       shadowColor: "#000",
       shadowOffset: {
         width: 0,
         height: 3,
       },
       borderWidth: 1,
-      borderColor: "#ddd",
+      borderColor: "rgba(0,0,0, .5)",
       borderStyle: "solid",
       shadowOpacity: 0.29,
       shadowRadius: 4.65,
@@ -89,7 +104,7 @@ const styles = StyleSheet.create({
     },
     header: {
       color: "#222",
-      fontSize: SIZES.h2,
+      fontSize: SIZES.h3,
       fontWeight: "bold",
       marginLeft: 5,
       flexWrap: 'wrap',
@@ -100,6 +115,6 @@ const styles = StyleSheet.create({
     },
     body: {
       color: "#222",
-      fontSize: 18,
+      fontSize: 14,
     }
   })

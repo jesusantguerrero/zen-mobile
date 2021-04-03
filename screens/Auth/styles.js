@@ -1,17 +1,16 @@
 import { StyleSheet } from 'react-native';
-import { color } from 'react-native-reanimated';
 
 export default StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: "#4F5B7A",
+        alignItems: 'center',
         justifyContent: 'center',
         alignContent: 'center',
         color: "white",
     },
     logo: {
-        flex: 1,
+        marginTop: 100,
         height: 70,
         width: 70,
         alignSelf: "center",
@@ -38,6 +37,7 @@ export default StyleSheet.create({
         marginTop: 20,
         height: 48,
         borderRadius: 5,
+        flexDirection: 'row',
         alignItems: "center",
         justifyContent: 'center'
     },
@@ -50,13 +50,14 @@ export default StyleSheet.create({
         marginTop: 20,
         height: 48,
         borderRadius: 5,
+        flexDirection: 'row',
         alignItems: "center",
         justifyContent: 'center'
     },
     buttonTitle: {
         color: 'white',
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
     footerView: {
         flex: 1,

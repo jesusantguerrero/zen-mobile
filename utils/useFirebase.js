@@ -18,15 +18,11 @@ if (!firebase.apps.length) {
 }
 
 export const register = async (email, password) => {
-    return firebase.auth().createUserWithEmailAndPassword(email, password).catch(reason => {
-        throw new Error(reason.message);
-    })
+    return firebase.auth().createUserWithEmailAndPassword(email, password)
 }
 
 export const login = async (email, password) => {
-    return firebase.auth().signInWithEmailAndPassword(email, password).catch((reason) => {
-        throw new Error(reason.message);
-    })
+    return firebase.auth().signInWithEmailAndPassword(email, password)
 }
 
 export const loginWithProvider = async(providerName) => {
