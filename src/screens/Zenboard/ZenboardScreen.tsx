@@ -39,7 +39,7 @@ export default function ZenboardScreen({ navigation}) {
   return (
     <ImageBackground source={images.temple} style={styles.container}>
       <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', COLORS.primary ]}
+        colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)', COLORS.primary ]}
         locations={[0, 0.5, 0.7]}
         style={{
           width: '100%', 

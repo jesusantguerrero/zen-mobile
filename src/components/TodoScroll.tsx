@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, FlatList, Pressable, Animated } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../config/constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -78,19 +78,63 @@ export default function TodoScroll({ items, onPress }) {
             </Pressable>
         );
     }
+
+    const scrollX = new Animated.Value(0);
+
+    const renderDots = () => {
+      const dotPosition = Animated.divide(scrollX, SIZES.width)
+      return (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, alignItems: 'center', height: 20 }}>
+          { items.map((item, index: number) => {
+            const opacity = dotPosition.interpolate({
+              inputRange: [index - 1, index, index + 1],
+              outputRange: [0.3, 1, 0.3],
+              extrapolate: 'clamp'
+            })
+
+            const dotSize = dotPosition.interpolate({
+              inputRange: [index - 1, index, index + 1],
+              outputRange: [SIZES.base, 12, SIZES.base],
+              extrapolate: 'clamp'
+            })
+
+            return (
+              <Animated.View
+                key={`dot-${index}`}
+              
+                style={[styles.dot, {width: dotSize, height: dotSize, opacity: opacity }]}
+              >
+
+              </Animated.View>
+            )
+          })}
+        </View>
+      )
+    }
+
     return (
-        <FlatList
-            data={items}
-            style={{ 
-              flex: 1, 
-              width: '100%',
-              marginTop: SIZES.padding,
-            }}
-            renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
-            pagingEnabled
-            horizontal
-            showsHorizontalScrollIndicator={false}
-        />
+        <View style={{ height: 100, flex: 1,  width: '100%' }}>
+          <Animated.FlatList
+              data={items}
+              style={{ 
+                flex: 1, 
+                width: '100%',
+                marginTop: SIZES.padding,
+                maxHeight: 155
+              }}
+              renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
+              pagingEnabled
+              horizontal
+              keyExtractor={(item, index) => `item-scroll-${item.uid}-${index}`}
+              showsHorizontalScrollIndicator={false}
+              onScroll={Animated.event([
+                { nativeEvent: { 
+                  contentOffset: { x: scrollX } 
+                } }
+              ], { useNativeDriver: false })}
+          />
+          { renderDots()}
+        </View>
     );
 }
 
@@ -108,8 +152,6 @@ const styles = StyleSheet.create({
         width: 0,
         height: 3,
       },
-      borderWidth: 1,
-      borderColor: "rgba(0,0,0, .6)",
       borderStyle: "solid",
       shadowOpacity: 0.29,
       shadowRadius: 4.65,
@@ -130,5 +172,11 @@ const styles = StyleSheet.create({
     body: {
       color: "#222",
       fontSize: 14,
+    },
+    dot: {
+      borderRadius: SIZES.radius,
+      backgroundColor: 'white',
+      marginHorizontal: SIZES.radius / 2
+
     }
   })

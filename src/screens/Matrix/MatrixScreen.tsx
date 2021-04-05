@@ -136,7 +136,7 @@ export default function MatrixScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <MatrixHeader></MatrixHeader>
-      <ScrollView style={{
+      <View style={{
           marginTop: 100,
           paddingBottom: 30,
       }}>
@@ -147,7 +147,7 @@ export default function MatrixScreen({ navigation }) {
           onPress={() => console.log('hola')}
         >
         </TaskGroup>
-      </ScrollView>
+      </View>
     </View>
   );
 }

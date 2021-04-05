@@ -59,6 +59,8 @@ export default function TaskGroup({ label, tasks , onPress, color }) {
           marginTop: SIZES.padding,
           marginHorizontal: SIZES.padding,
           padding: 20,
+          height: SIZES.height - 1000,
+          maxHeight: SIZES.height - 420,
           borderRadius: SIZES.radius,
           backgroundColor: 'white',
           ...SHADOWS.shadow1,
@@ -69,7 +71,6 @@ export default function TaskGroup({ label, tasks , onPress, color }) {
                 marginTop: SIZES.radius
               }}
               keyExtractor={(item, index) => `${index}-${item.uid}`}
-              scrollEnabled={false}
               data={tasks}
               ItemSeparatorComponent={separator}
               renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
@@ -90,8 +91,6 @@ export default function TaskGroup({ label, tasks , onPress, color }) {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: 'white',
-
       width: '100%',
       height: 80,
       paddingBottom: 40,

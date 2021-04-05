@@ -1,6 +1,6 @@
 import "react-native-gesture-handler"
 import React, { useState, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { COLORS } from "./src/config/constants"; 
 import { decode, encode } from "base-64";
@@ -44,6 +44,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar
+        translucent={false}
+        backgroundColor='rgba(255,255,255,1)'
+        barStyle='dark-content'
+      />
         <NavigationContainer>
             { user ? <HomeNavigator user={user}></HomeNavigator> : <AuthNavigator></AuthNavigator>}
         </NavigationContainer>
