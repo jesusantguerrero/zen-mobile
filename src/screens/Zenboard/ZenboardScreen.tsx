@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
@@ -6,8 +6,10 @@ import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { images, SIZES, FONTS } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
+import AuthContext from '../../utils/AuthContext';
 
-export default function ZenboardScreen({ navigation, extraData }) {
+export default function ZenboardScreen({ navigation}) {
+  const { extraData } =useContext(AuthContext);
   const [currentTask, setCurrentTask] = useState(null);
   const [showLineUp, setShowLineUp] = useState(false);
   const [ todo, setTodo ] = useState([])

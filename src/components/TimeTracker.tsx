@@ -172,18 +172,18 @@ export default function TimeTracker({ task}) {
 
     return (
         <View style={styles.entityContainer}>
-                <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", maxHeight: 100 }}>
+                <View style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
                     <Text style={styles.clockText}>
                         {currentTime}
                     </Text> 
                 </View>
                 <Pressable style={{ 
                         flex: 1,
-                        backgroundColor: COLORS.red[400],
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
                         justifyContent: "center",
                         alignItems: 'center',
                         flexDirection: "row", 
-                        borderRadius: SIZES.radius,
+                        borderRadius: SIZES.radius + 2,
                         maxHeight: 40,
                         minHeight: 40,
                         padding: 10,
@@ -209,7 +209,16 @@ const styles = StyleSheet.create({
         textAlign: "center",
         justifyContent:"center",
         alignItems: "center",
-        minHeight: 40
+        minHeight: 40,
+        borderRadius: 100,
+        borderWidth: 3,
+        maxWidth: 200,
+        minWidth: 200,
+        maxHeight: 200,
+        height: 200,
+        padding: SIZES.padding,
+        borderColor: 'white',
+        overflow: 'hidden'
     },
     entityTitle: {
         fontSize: 14,
@@ -219,7 +228,7 @@ const styles = StyleSheet.create({
     clockText: {
         marginRight: 5,
         color: 'white',
-        fontSize: 70,
+        fontSize: 50,
         fontWeight: 'bold'
     },
     entityDate: {

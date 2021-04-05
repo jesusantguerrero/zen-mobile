@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
 import { ScrollView } from 'react-native-gesture-handler';
+import AuthContext from '../../utils/AuthContext';
 
-export default function MatrixScreen({ navigation, extraData }) {
+export default function MatrixScreen({ navigation }) {
   const [mode, setMode] = useState('zen');
+  const { extraData } = useContext(AuthContext);
 
   const [ todo, setTodo ] = useState([]);
   const [ selectedList, setSelectedList] = useState([]);

@@ -61,12 +61,12 @@ export default function TodoScroll({ items, onPress }) {
                   width: '100%',
                   paddingVertical: 8
                 }}>
-                  <TouchableOpacity style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <FontAwesome5  name="check-circle" size={14} color="black"></FontAwesome5>
                     <Text style={{...styles.body, marginLeft: 3 }}> Mark as done </Text>
                   </TouchableOpacity>
             
-                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', }}>
+                  <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <FontAwesome5 key="fa-home" name="calendar" size={14} color={COLORS.blue[400]}></FontAwesome5>
                         <Text style={{ ...styles.bodyText, color: COLORS.blue[400], marginLeft: 5}}>{item.due_date || 'Set due date'}
                         </Text>

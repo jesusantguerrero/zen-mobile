@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { Button, StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -9,6 +9,7 @@ import TabBarIcon from "../components/TabBarIcon";
 import TabBarIconSpecial from "../components/TabBarIconSpecial";
 import { createStackNavigator } from '@react-navigation/stack';
 import { logout } from "../utils/useFirebase";
+import AuthContext from "../utils/AuthContext";
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -50,43 +51,54 @@ export default function HomeNavigator({ user }) {
         );
     }
     function MainStackScreen () {
-      return (<Tab.Navigator
-          // initialRouteName="Matrix"
-          tabBarOptions={{
-            showLabel: false,
-            style: {
-              bottom: 0,
-              height: 60
-            }
-          }}
-      >
-            <Tab.Screen name="Zenboard" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="clock" label="Zen"></TabBarIcon>
+      return (
+        <AuthContext.Provider value={{ extraData: user }}>
+          <Tab.Navigator
+            // initialRouteName="Matrix"
+            tabBarOptions={{
+              showLabel: false,
+              style: {
+                bottom: 0,
+                height: 60
+              }
             }}
-            >
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Home" options={{
-              tabBarIcon: (props) => <TabBarIcon {...props} icon="home" label="Overview"></TabBarIcon>
-            }}>
-              { props => <HomeScreen {...props} extraData={user}></HomeScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="newItem" options={{
-                tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus" label=''></TabBarIconSpecial>
-            }}>
-              { props => <ZenboardScreen {...props} extraData={user}></ZenboardScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Matrix" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="border-all" label="Matrix"></TabBarIcon>
-            }}>
-              { props => <MatrixScreen {...props} extraData={user}></MatrixScreen>}
-            </Tab.Screen>
-            <Tab.Screen name="Metrics" options={{
-                tabBarIcon: (props) => <TabBarIcon {...props} icon="chart-line" label="Metrics"></TabBarIcon>
-            }}>
-              { props => <MetricsScreen {...props} extraData={user}></MetricsScreen>}
-            </Tab.Screen>
-      </Tab.Navigator>
+        >
+              <Tab.Screen 
+                name="Zenboard" 
+                options={{
+                  tabBarIcon: (props) => <TabBarIcon {...props} icon="clock" label="Zen"></TabBarIcon>
+                }}
+                component={ZenboardScreen}
+              />
+              <Tab.Screen 
+                name="Home" 
+                options={{
+                  tabBarIcon: (props) => <TabBarIcon {...props} icon="history" label="Standup"></TabBarIcon>
+                }}
+                component={HomeScreen}
+              />
+              <Tab.Screen 
+                name="newItem" 
+                options={{
+                  tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus" label=''></TabBarIconSpecial>
+                }}
+                component={ZenboardScreen} />
+              <Tab.Screen 
+                name="Matrix" 
+                options={{
+                  tabBarIcon: (props) => <TabBarIcon {...props} icon="border-all" label="Matrix"></TabBarIcon>
+              }}
+                component={MatrixScreen}
+              />
+              <Tab.Screen 
+                name="Metrics" 
+                options={{
+                  tabBarIcon: (props) => <TabBarIcon {...props} icon="chart-line" label="Metrics"></TabBarIcon>
+                }}
+                component={MetricsScreen}
+              />
+        </Tab.Navigator>
+      </AuthContext.Provider>
       )}
             
       return (
