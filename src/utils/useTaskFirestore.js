@@ -1,5 +1,5 @@
 import { format as formatDate} from "date-fns"
-import { db, firebaseState } from "./useFirebase";
+import { db, firebase } from "./useFirebase";
 const collectionName = "tasks";
 
 const getDate = (task) => {

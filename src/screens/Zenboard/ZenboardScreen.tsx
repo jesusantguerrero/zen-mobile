@@ -4,16 +4,18 @@ import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
 import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { images, SIZES, FONTS } from "../../config/constants";
+import { images, SIZES, FONTS, COLORS } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import AuthContext from '../../utils/AuthContext';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function ZenboardScreen({ navigation}) {
-  const { extraData } =useContext(AuthContext);
+  const { extraData } = useContext(AuthContext);
   const [currentTask, setCurrentTask] = useState(null);
   const [showLineUp, setShowLineUp] = useState(false);
   const [ todo, setTodo ] = useState([])
   const { getTaskByMatrix } = useTaskFirestore(extraData)
+
 
   const getMatrix = (matrix: string, callback) => {
       getTaskByMatrix(matrix).then((collectionRef) => {
@@ -36,18 +38,45 @@ export default function ZenboardScreen({ navigation}) {
 
   return (
     <ImageBackground source={images.temple} style={styles.container}>
-      <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .5, position: 'absolute'}} />
+      <LinearGradient
+        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', COLORS.primary ]}
+        locations={[0, 0.5, 0.7]}
+        style={{
+          width: '100%', 
+          height: '100%',
+          position: 'absolute'
+        }}
+      />
       <AppHeader navigation={navigation} user={extraData}></AppHeader>
-      <View style={{width: '100%', padding: SIZES.padding}}>
-        <TaskView task={currentTask}></TaskView>
+      <View style={{width: '100%', paddingHorizontal: SIZES.padding, paddingBottom: SIZES.padding }}>
+        <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { extraData?.displayName || extraData?.email }</Text>
+        <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}> 4 April, 2021 </Text>
       </View>
-      <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250 }}>
+      <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
         <TimeTracker task={currentTask} onPomodoroStarted="" onPomodoroStoped=""></TimeTracker>
       </View>
-      <TouchableOpacity style={{ marginBottom: 10}} onPress={() => setShowLineUp(!showLineUp)}>
-        <Text style={{ ...FONTS.h2}}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
+      <TouchableOpacity style={{ 
+          marginBottom: 10, 
+          justifyContent: 'space-between', 
+          flexDirection: 'row', 
+          width: '100%',
+          paddingHorizontal: SIZES.padding
+          
+        }} 
+        onPress={() => setShowLineUp(!showLineUp)}>
+        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup' : 'Focused'} </Text>
+        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
       </TouchableOpacity>
-      {!showLineUp ? null : <TodoScroll items={todo} onPress={setCurrentTask}></TodoScroll>}
+      {!showLineUp ? 
+        <View style={{width: '100%', padding: SIZES.padding}}>
+          <TaskView task={currentTask}></TaskView>
+        </View>
+        : 
+        <TodoScroll
+          items={todo} 
+          onPress={setCurrentTask}
+        />      
+      }
     </ImageBackground>
   );
 }

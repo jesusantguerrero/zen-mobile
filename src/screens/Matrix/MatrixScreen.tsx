@@ -71,20 +71,27 @@ export default function MatrixScreen({ navigation }) {
       <View
         style={{
           width: "100%",
-          height: 200,
-          position: 'relative',
-          ...SHADOWS.shadow1
+          height: 210,
+          position: 'relative'
         }}
       >
-        <ImageBackground source={images.zenTemple} style={styles.container}>
-          <View style={{width: '100%', height: '100%', backgroundColor:'#000',  opacity: .6, marginBottom: 15, position: 'absolute'}} />
-          <AppHeader navigation={navigation} user={extraData}></AppHeader>
+        <ImageBackground source={images.zenTemple} style={styles.containerHeader}>
+          <View style={{
+            width: '100%', 
+            height: '100%', 
+            backgroundColor:'#000', 
+            opacity: .6, 
+            marginBottom: 15, 
+            position: 'absolute'
+          }} />
+        </ImageBackground>
+        <AppHeader navigation={navigation} user={extraData}></AppHeader>
           <View style={{
             marginTop: 16,
             width: '100%',
             paddingHorizontal: SIZES.padding,
             position: 'absolute',
-            bottom: '-35%',
+            bottom: '-36%',
             elevation: 9,
             zIndex: 10,
           }}>
@@ -106,7 +113,7 @@ export default function MatrixScreen({ navigation }) {
                     backgroundColor: list.color,
                     marginBottom: 14,
                     width: '48%',
-                    height: 70,
+                    height: 74,
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderRadius: SIZES.radius,
@@ -122,7 +129,6 @@ export default function MatrixScreen({ navigation }) {
 
             </View>
           </View>
-        </ImageBackground>
       </View>
     )
   }
@@ -147,9 +153,21 @@ export default function MatrixScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  containerHeader: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: '#fff',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
+     ...SHADOWS.shadow1
+  },
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: '#fff'
+    backgroundColor: COLORS.primary,
   },
 });

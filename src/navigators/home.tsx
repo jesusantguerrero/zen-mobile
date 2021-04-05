@@ -1,8 +1,9 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Button, StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator,BottomTabBar, BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { SIZES, FONTS } from "../config/constants";
+import { BlurView } from 'expo-blur';
+import { SIZES, FONTS, COLORS } from "../config/constants";
 
 import {  ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../screens";
 import TabBarIcon from "../components/TabBarIcon";
@@ -54,12 +55,32 @@ export default function HomeNavigator({ user }) {
       return (
         <AuthContext.Provider value={{ extraData: user }}>
           <Tab.Navigator
-            // initialRouteName="Matrix"
+              tabBar={(props: BottomTabBarProps) => (
+                <BlurView
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    borderTopLeftRadius: 14,
+                    borderTopRightRadius: 14
+                  }}
+                  tint="dark"
+                  intensity={100}
+              >
+                <BottomTabBar {...props} />
+              </BlurView>
+              )
+            }
             tabBarOptions={{
               showLabel: false,
               style: {
                 bottom: 0,
-                height: 60
+                height: 60,
+                borderTopWidth: 0,
+                borderTopColor: '#666666',
+                backgroundColor: 'transparent',
+                elevation: 0
               }
             }}
         >

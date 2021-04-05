@@ -9,10 +9,13 @@ const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
 const { width: windowWidth } = Dimensions.get("window");
 
 export default function TodoScroll({ items, onPress }) {
-    const Slide = ({ item, index, onPress }) => {
-        
+    const Slide = ({ item, index, onPress }) => {    
         return (
-            <Pressable style={styles.container} key={index} onPress={onPress.bind(null, item)}>
+            <Pressable 
+                style={styles.container} 
+                key={index} 
+                onPress={onPress.bind(null, item)}
+            >
                 <View style={{
                       flex: 1,
                       width: '100%',
@@ -78,7 +81,11 @@ export default function TodoScroll({ items, onPress }) {
     return (
         <FlatList
             data={items}
-            style={{ flex: 1, width: windowWidth }}
+            style={{ 
+              flex: 1, 
+              width: '100%',
+              marginTop: SIZES.padding,
+            }}
             renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
             pagingEnabled
             horizontal
@@ -89,11 +96,11 @@ export default function TodoScroll({ items, onPress }) {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: "rgba(0,0,0, .5)",
+      backgroundColor: "rgba(0,0,0,.6)",
       borderRadius: 8,
-      width: windowWidth - 30,
-      marginLeft: 15,
-      marginRight: 15,
+      width: windowWidth - 48,
+      marginLeft: 24,
+      marginRight: 24,
       height: 150,
       shadowColor: "#000",
       overflow: 'hidden',
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
         height: 3,
       },
       borderWidth: 1,
-      borderColor: "rgba(0,0,0, .5)",
+      borderColor: "rgba(0,0,0, .6)",
       borderStyle: "solid",
       shadowOpacity: 0.29,
       shadowRadius: 4.65,
