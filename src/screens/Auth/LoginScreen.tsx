@@ -72,7 +72,7 @@ export default function LoginScreen({navigation}) {
                 if (result.type === 'success') {
                     const accessToken  = result.accessToken
                     const idToken =  result.idToken
-                    const credential = firebase.auth().GoogleAuthProvider.credential(idToken, accessToken)
+                    const credential = firebase.auth().GoogleAuthProvider.getCredential(idToken, accessToken)
                     await firebase.auth().signInWithCredential(credential)
                   } else {
                     setLoadingMethod('')
