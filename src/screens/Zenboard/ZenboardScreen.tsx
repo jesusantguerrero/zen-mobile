@@ -17,23 +17,29 @@ export default function ZenboardScreen({ navigation}) {
   const { getTaskByMatrix } = useTaskFirestore(extraData)
 
 
-  const getMatrix = (matrix: string, callback) => {
+  const getMatrix = (matrix: string, callback): null|Function => {
+      let unsubscribe: null|Function = null;
       getTaskByMatrix(matrix).then((collectionRef) => {
-      const unsubscribe = collectionRef.onSnapshot((snap) => {
-        const results = [];
-        snap.forEach((doc) => {
-          results.push({ ...doc.data(), uid: doc.id });
+        unsubscribe = collectionRef.onSnapshot((snap) => {
+          const results = [];
+          snap.forEach((doc) => {
+            results.push({ ...doc.data(), uid: doc.id });
+          });
+          setCurrentTask(results[0])
+          callback(results)
         });
-        setCurrentTask(results[0])
-        callback(results)
-      });
   
-      return unsubscribe;
     });
+    return unsubscribe;
   };
 
   useEffect(() => { 
-      return getMatrix("todo", setTodo);
+      const unsubscribe = getMatrix("todo", setTodo);
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      }
   }, [])
 
   return (
