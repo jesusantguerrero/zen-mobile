@@ -4,7 +4,6 @@ import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
-import { ScrollView } from 'react-native-gesture-handler';
 
 export default function TaskFormModal({ navigation, user, task }) {
   const [ localTask, setLocalTask ] = useState({

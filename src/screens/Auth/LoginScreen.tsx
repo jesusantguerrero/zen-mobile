@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { Image, ImageBackground, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ImageBackground, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { login, loginWithProvider, firebase } from "../../utils/useFirebase";
 import * as GoogleSignIn from 'expo-google-sign-in';
-import * as Google from 'expo-google-app-auth';
+import * as WebBrowser from "expo-web-browser"
+import * as Google from 'expo-auth-session/providers/google';
 import { WEB_CLIENT_ID } from '../../utils/keys';
 import { FontAwesome5 } from "@expo/vector-icons"
 import styles from './styles';
 import { images } from "../../config/constants";
 
+
+WebBrowser.maybeCompleteAuthSession();
+
 export default function LoginScreen({navigation}) {
     const [email, setEmail] = useState('')
     const [loadingMethod, setLoadingMethod] = useState('')
     const [password, setPassword] = useState('')
+
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        expoClientId: '505825563328-ramcmqea4jn66ounj5hgd0kflppdtmmo.apps.googleusercontent.com',
+        androidClientId: WEB_CLIENT_ID,
+        webClientId: WEB_CLIENT_ID
+    })
 
     const onFooterLinkPress = () => {
         navigation.navigate('Registration')
@@ -45,44 +55,35 @@ export default function LoginScreen({navigation}) {
             if (type === 'success') {
                 const accessToken  = user?.auth?.accessToken
                 const idToken =  user?.auth?.idToken
-                const credential = firebase.auth().GoogleAuthProvider.credential(idToken, accessToken)
-                await firebase.auth().signInWithCredential(credential)
+                if (idToken && accessToken) {
+                    signWithFirebase(idToken, accessToken);
+                }
               } else {
+                  ToastAndroid.showWithGravity("Ha ocurrido un error al loguearse", ToastAndroid.LONG, ToastAndroid.BOTTOM)
+                  ToastAndroid.showWithGravity("Ha ocurrido un error al loguearse", ToastAndroid.LONG, ToastAndroid.BOTTOM)
+                }
+            } catch (error) {
                 setLoadingMethod('')
-                return alert('error');
-              }
-        } catch (error) {
-            setLoadingMethod('')
-            console.log('Something else went wrong... ', error.toString())
+                ToastAndroid.showWithGravity("Ha ocurrido un error al loguearse..."  + error.toString(), ToastAndroid.LONG, ToastAndroid.BOTTOM)
         }
     }
 
-    const onLoginCustomPress = async() => {
-            if (loadingMethod) {
-                return
-            }
-            setLoadingMethod('google')
-            try {
-                const result = await Google.logInAsync({
-                    // androidStandaloneAppClientId: WEB_CLIENT_ID,
-                    clientId: WEB_CLIENT_ID,
-                    androidClientId: WEB_CLIENT_ID,
-                });
-
-                if (result.type === 'success') {
-                    const accessToken  = result.accessToken
-                    const idToken =  result.idToken
-                    const credential = firebase.auth().GoogleAuthProvider.getCredential(idToken, accessToken)
-                    await firebase.auth().signInWithCredential(credential)
-                  } else {
-                    setLoadingMethod('')
-                    return alert('error');
-                  }
-            } catch (error) {
-                setLoadingMethod('')
-                console.log('Something else went wrong... ', error.toString())
-            }
+    const signWithFirebase = async(idToken: string, accessToken: string) => {
+        console.log(idToken, 'hola?');
+        const credential = firebase.auth().GoogleAuthProvider.getCredential(idToken, accessToken)
+        console.log(credential, 'hola?');
+        await firebase.auth().signInWithCredential(credential)
     }
+
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { authentication } = response;
+            console.log(authentication);
+            if (authentication?.state) {
+                signWithFirebase(authentication?.state, authentication?.accessToken)
+            }
+        }
+    }, [response])
 
     return (
         <ImageBackground source={images.zenTemple} style={styles.container}>
@@ -125,7 +126,7 @@ export default function LoginScreen({navigation}) {
                         <TouchableOpacity
                             style={styles.googleButton}
                             disabled={!!loadingMethod}
-                            onPress={() => onLoginCustomPress()}>
+                            onPress={() => promptAsync()}>
                             <Text style={styles.buttonTitle}>Login with Google</Text>
                             { loadingMethod != 'google' ? null : (<View style={{ marginLeft: 5}}>
                                 <FontAwesome5 name='spinner' color='white'></FontAwesome5>

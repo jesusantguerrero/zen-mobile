@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { Button, StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { Button, StyleSheet, View, Text, TouchableOpacity, Pressable, TextInput } from 'react-native';
 import { createBottomTabNavigator,BottomTabBar, BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from 'expo-blur';
@@ -8,6 +8,7 @@ import { SIZES, FONTS, COLORS } from "../config/constants";
 import {  ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../screens";
 import TabBarIcon from "../components/TabBarIcon";
 import TabBarIconSpecial from "../components/TabBarIconSpecial";
+import QuickAdd from "../components/QuickAdd";
 import { createStackNavigator } from '@react-navigation/stack';
 import { logout } from "../utils/useFirebase";
 import AuthContext from "../utils/AuthContext";
@@ -16,6 +17,8 @@ const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
 
 export default function HomeNavigator({ user }) {
+    const [showQuickTask, setShowQuickTask] = useState(false);
+
     function ModalScreen({ navigation }) {
         return (
             <View>
@@ -68,7 +71,10 @@ export default function HomeNavigator({ user }) {
                   tint="dark"
                   intensity={100}
               >
+                { showQuickTask ?  
+                <QuickAdd onSave={() => { setShowQuickTask(false)}} onCancel={() => { setShowQuickTask(false)}} user={user}/> :
                 <BottomTabBar {...props} />
+              }
               </BlurView>
               )
             }
@@ -101,7 +107,7 @@ export default function HomeNavigator({ user }) {
               <Tab.Screen 
                 name="newItem" 
                 options={{
-                  tabBarIcon: (props) => <TabBarIconSpecial {...props} icon="plus" label=''></TabBarIconSpecial>
+                  tabBarButton: (props) => <TabBarIconSpecial {...props} icon="plus" onPress={() => setShowQuickTask(true)}></TabBarIconSpecial>
                 }}
                 component={ZenboardScreen} />
               <Tab.Screen 

@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet, Dimensions, FlatList, Pressable, Animated } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, FlatList, Pressable, Animated, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../config/constants';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const SLIDER_WIDTH = Dimensions.get('window').width + 80
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
     },
     dot: {
       borderRadius: SIZES.radius,
-      backgroundColor: 'white',
+      backgroundColor: COLORS.green[400],
       marginHorizontal: SIZES.radius / 2
 
     }

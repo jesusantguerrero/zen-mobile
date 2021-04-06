@@ -5,6 +5,7 @@
     "name": "zen",
     "slug": "zen",
     "version": "1.0.0",
+    "scheme": "insane",
     "assetBundlePatterns": [
       "**/*"
     ],

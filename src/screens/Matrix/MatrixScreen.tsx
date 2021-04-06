@@ -4,7 +4,6 @@ import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
-import { ScrollView } from 'react-native-gesture-handler';
 import AuthContext from '../../utils/AuthContext';
 
 export default function MatrixScreen({ navigation }) {
@@ -168,6 +167,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.gray[400],
   },
 });

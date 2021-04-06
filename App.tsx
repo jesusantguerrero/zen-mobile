@@ -13,7 +13,6 @@ import AuthNavigator from "./src/navigators/auth";
 import {useFonts, Roboto_400Regular, Roboto_900Black, Roboto_700Bold } from "@expo-google-fonts/roboto"
 
 export default function App() {
-  const [mode, setMode] = useState('zen');
   const [isLoading, setIsLoading ] = useState(true);
   const [user, setUser] = useState(null); 
   let [fontsLoaded] = useFonts({
