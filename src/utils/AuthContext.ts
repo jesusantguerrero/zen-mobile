@@ -1,14 +1,8 @@
 import { createContext } from "react"
 import firebase from 'firebase';
 
-interface FirebaseUser {
-  uid: string,
-  displayName: string,
-  email: string  
-} 
-
 interface AuthData {
-    extraData: FirebaseUser | null
+    extraData: firebase.User | null
 }
 
 const AuthContext = createContext<AuthData>({

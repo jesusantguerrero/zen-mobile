@@ -1,13 +1,15 @@
 import { format as formatDate} from "date-fns"
-import { db, firebase } from "./useFirebase";
+import firebase from "firebase";
+import { Task } from "./data";
+import { db } from "./useFirebase";
 const collectionName = "tasks";
 
-const getDate = (task) => {
+const getDate = (task: Task) => {
     return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
 }
 
-export function useTaskFirestore(user) {
-    const saveTask = (task) => {
+export function useTaskFirestore(user: firebase.User) {
+    const saveTask = (task: Task) => {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
@@ -24,7 +26,7 @@ export function useTaskFirestore(user) {
         });
     }
 
-    const updateTask = (task) => {
+    const updateTask = (task: Task) => {
         const trackRef = db.collection(collectionName).doc(task.uid)
         if (task.due_date) {
             task.due_date = getDate(task)
@@ -35,7 +37,7 @@ export function useTaskFirestore(user) {
         })
     }
 
-    const updateTaskBatch = (tasks) => {
+    const updateTaskBatch = (tasks: Task[]) => {
         const batch = db.batch()
         tasks.forEach((task) => {
             const trackRef = db.collection(collectionName).doc(task.uid)
@@ -52,7 +54,7 @@ export function useTaskFirestore(user) {
         })
     }
 
-    const deleteTask = (task) => {
+    const deleteTask = (task: Task) => {
         return db.collection(collectionName).doc(task.uid).delete()
         .catch(function(error) {
             console.error("Error adding document: ", error);
@@ -87,22 +89,22 @@ export function useTaskFirestore(user) {
         return tasks;
     }
 
-    const getUncommitedTasks = async (date, userUuid) => {
-        const tasks = [];
+    const getUncommitedTasks = async (date: string, userUuid: string) => {
+        const tasks:Task[] = [];
         await db.collection(collectionName)
         .where("user_uid", "==", userUuid || user.uid)
         .where("done", "==", false)
         .orderBy("order")
         .get()
-        .then(querySnapshot => {
+        .then((querySnapshot: firebase.firestore.QuerySnapshot) => {
             querySnapshot.forEach((doc) => {
-                tasks.push({...doc.data(), uid: doc.id });
+                tasks.push(mapTask(doc.data(), doc.id ));
             });
         })
         return tasks;
     }
 
-    const getTaskByMatrix = async (matrix) => {
+    const getTaskByMatrix = async (matrix: string) => {
         const matrixRef = db.collection(collectionName)
             .where("user_uid", "==", user.uid)
             .where("done", "==", false)
@@ -110,6 +112,25 @@ export function useTaskFirestore(user) {
             .orderBy("order")
             
         return matrixRef
+    }
+
+    const mapTask = (data: firebase.firestore.DocumentData, id: string) => {
+        return {
+            uid: id,
+            done: data.done,
+            title: data.title,
+            description: data.description,
+            commit_date: data.commit_date,
+            contacts: data.contacts,
+            due_date: data.due_date,
+            duration: data.duration,
+            duration_ms: data.duration_ms,
+            matrix: data.matrix,
+            order: data.order,
+            tags: data.tags,
+            tracks: [],
+            checklist: data.checklist,
+          }
     }
 
     return {
@@ -120,7 +141,8 @@ export function useTaskFirestore(user) {
         getTaskByMatrix,
         getUncommitedTasks,
         getCommitedTasks,
-        getAllFromUser
+        getAllFromUser,
+        mapTask
     }
 
 }

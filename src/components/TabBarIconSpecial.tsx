@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
+import { View, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from "@expo/vector-icons"
 import { COLORS, SHADOWS } from "../config/constants";
 
-export default function TabBarIcon({ onPress, icon}) {
+export default function TabBarSpecialIcon({ onPress, icon} : TabBarIconSpecialProps) {
     return (
         <View>
           <TouchableOpacity 
@@ -21,4 +20,10 @@ export default function TabBarIcon({ onPress, icon}) {
           </TouchableOpacity>
         </View>
     )
+}
+
+
+type TabBarIconSpecialProps = {
+  onPress: () => {},
+  icon: string
 }

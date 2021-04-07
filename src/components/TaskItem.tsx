@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Task } from '../utils/data';
 
-export default function TaskItem({ item, index }) {
+export default function TaskItem({ item } : TaskItemProps) {
   console.log(item)
     return (
         <View style={styles.entityContainer}>
@@ -52,3 +53,7 @@ const styles = StyleSheet.create({
     },
 })
 
+type TaskItemProps = {
+    item: Task,
+    index: number
+}

@@ -57,27 +57,17 @@ export const logout = () => {
     return firebase.auth().signOut()
 }
 
-// Database
 export const db = firebase.firestore();
 export const updateSettings = (settings) => {
     return updateUserSettings({
-        user_uid: firebaseState.user.uid,
-        uid: firebaseState.user.uid,
+        user_uid: user.uid,
+        uid: user.uid,
         ...settings
     }).then(() => {
-        firebaseState.settings =  Object.assign(firebaseState.settings || {}, settings)
+        const localSettings =  Object.assign(settings || {}, settings)
     })
-
 }
 
-const initFirebase = new Promise(resolve => {
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-           
-        }
-        resolve(user);
-    })
-})
 
 export { firebase };
 

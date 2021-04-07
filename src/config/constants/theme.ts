@@ -1,35 +1,19 @@
 import {  Dimensions,  } from 'react-native';
 const { width, height } = Dimensions.get("window");
+import colors from "./colors";
 
 export const COLORS = {
     primary: "#1B243F",
     primaryLighten: '#1b243f',
     primaryText: "#4B5563",
     secondary: "#10B981",
+    bgPanelColor: "#43527c",
+    green: colors.green,
+    blue: colors.blue,
+    yellow: colors.yellow,
+    red: colors.red,
 
-    green: {
-        400: "#34D399",
-        500: "#10B981"
-    },
-    blue: {
-        400: "#60A5FA",
-        500: "#3B82F6"
-    },
-    yellow: {
-        400: "#FBBF24",
-        500: "#F59E0B"
-    },
-    red: {
-        400: "#F87171",
-        500: "#EF4444"
-    },
-
-    gray: {
-        400: "#9CA3AF",
-        500: "#6B7280",
-        700: "#374151",
-        900: "#111827"
-    }
+    gray: colors.gray
 }
 
 export const SIZES = {
@@ -64,7 +48,7 @@ export const FONTS = {
     body2: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body2, lineHeight: 22 },
     body3: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body3, lineHeight: 22 },
     body4: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body4, lineHeight: 16 },
-    body4: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body5, lineHeight: 14 }
+    body5: { fontFamily: "Roboto_400Regular", fontSize: SIZES.body5, lineHeight: 14 }
 }
 
 export const SHADOWS = {

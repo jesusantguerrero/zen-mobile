@@ -1,35 +1,42 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity } from 'react-native';
 import TodoScroll from "../../components/TodoScroll";
 import TaskView from "../../components/TaskView";
 import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { images, SIZES, FONTS, COLORS } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import AuthContext from '../../utils/AuthContext';
 import { LinearGradient } from "expo-linear-gradient";
+import firebase from 'firebase';
+import { Task } from '../../utils/data';
+import { ZenboardScreenProps } from "../../navigators/main"
 
-export default function ZenboardScreen({ navigation}) {
+export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   const { extraData } = useContext(AuthContext);
-  const [currentTask, setCurrentTask] = useState(null);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [showLineUp, setShowLineUp] = useState(false);
   const [ todo, setTodo ] = useState([])
-  const { getTaskByMatrix } = useTaskFirestore(extraData)
+  const { getAllTracksOfTask } = useTrackFirestore();
 
-
-  const getMatrix = (matrix: string, callback): null|Function => {
-      let unsubscribe: null|Function = null;
-      getTaskByMatrix(matrix).then((collectionRef) => {
-        unsubscribe = collectionRef.onSnapshot((snap) => {
-          const results = [];
-          snap.forEach((doc) => {
-            results.push({ ...doc.data(), uid: doc.id });
+  //  Line up list
+  const getMatrix = (matrix: string, callback: Function): null|Function => {
+    let unsubscribe: null|Function = null;
+      if (extraData) {
+        const { getTaskByMatrix, mapTask } = useTaskFirestore(extraData)
+        getTaskByMatrix(matrix).then((collectionRef: firebase.firestore.Query) => {
+          unsubscribe = collectionRef.onSnapshot((snap) => {
+            const results:Array<Task> = [];
+            snap.forEach((doc) => {
+              const data = doc.data();
+              return results.push(mapTask(data, data.id));
+            });
+            setMainTask(results[0])
+            callback(results)
           });
-          setCurrentTask(results[0])
-          callback(results)
         });
-  
-    });
+      }
     return unsubscribe;
   };
 
@@ -41,6 +48,43 @@ export default function ZenboardScreen({ navigation}) {
         }
       }
   }, [])
+
+  // main task
+  const setMainTask = async (task: Task) => {
+    const current = {...task}
+    current.tracks = await getAllTracksOfTask(task.uid)
+    setCurrentTask(current)
+    setShowLineUp(false);
+  }
+
+  const viewPadding = useRef(new Animated.Value(0)).current; 
+
+  useEffect(() => {
+    Animated.timing(viewPadding, {
+        toValue: SIZES.padding,
+        duration: 500,
+        useNativeDriver: false
+    }).start()
+    
+    return () => {
+      Animated.timing(viewPadding, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: false
+      }).start()
+
+    }
+  }, [])
+
+  // tracker
+  const [tracker, setTracker] = useState(null);
+  const saveTrack = () => {
+
+  }
+
+  const updateTrack = () => {
+    
+  }
 
   return (
     <ImageBackground source={images.temple} style={styles.container}>
@@ -59,28 +103,40 @@ export default function ZenboardScreen({ navigation}) {
         <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}> 4 April, 2021 </Text>
       </View>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
-        <TimeTracker task={currentTask} onPomodoroStarted="" onPomodoroStoped=""></TimeTracker>
+        <TimeTracker 
+          task={currentTask} 
+          onPomodoroStarted={saveTrack} 
+          onPomodoroStoped={updateTrack} 
+          onTick={setTracker}
+        />
       </View>
-      <TouchableOpacity style={{ 
+      <View style={{ 
           marginBottom: 10, 
           justifyContent: 'space-between', 
           flexDirection: 'row', 
           width: '100%',
           paddingHorizontal: SIZES.padding
           
-        }} 
-        onPress={() => setShowLineUp(!showLineUp)}>
+        }}>
         <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup' : 'Focused'} </Text>
-        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
-      </TouchableOpacity>
-      {!showLineUp ? 
-        <View style={{width: '100%', padding: SIZES.padding}}>
-          <TaskView task={currentTask}></TaskView>
-        </View>
+        <TouchableOpacity
+          onPress={() => setShowLineUp(!showLineUp)}
+        >
+          <Text style={{ ...FONTS.h3, color: COLORS.green[400] }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
+        </TouchableOpacity>
+      </View>
+      {!showLineUp && currentTask ? 
+        <Animated.View style={{
+          width: '100%', 
+          paddingVertical: SIZES.padding,
+          paddingHorizontal: viewPadding
+        }}>
+          <TaskView task={currentTask} tracker={tracker}></TaskView>
+        </Animated.View>
         : 
         <TodoScroll
           items={todo} 
-          onPress={setCurrentTask}
+          onPress={setMainTask}
         />      
       }
     </ImageBackground>

@@ -1,66 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Duration, Interval, DateTime } from "luxon";
+import { Duration, Interval, DateTime, DurationObject } from "luxon";
 import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"
+import { Task } from '../utils/data';
 
-export default function TimeTracker({ task}) {
-    const [track, setTrack] = useState({
-        uid: null,
-        task_uid: null,
+export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped, onTick } : TimeTrackerProps) {
+    const [track, setTrack] = useState<TimeTrack>({
+        uid: undefined,
+        task_uid: undefined,
         started_at: null,
         ended_at: null,
         type: "promodoro",
         duration: null,
         target_time: null,
-        completed: false
-      });
-      
-    const [state, setState] = useState({
-    template: [
-        "promodoro",
-        "rest",
-        "promodoro",
-        "rest",
-        "promodoro",
-        "rest",
-        "promodoro",
-        "long",
-    ],
-    currentStep: 0,
-    modes: {
-        long: {
-        label: "Long Rest",
-        min: 15,
-        sec: 0,
-        color: "text-green-400",
-        colorBg: "bg-green-400",
-        colorBorder: "border-green-400",
-        },
-        promodoro: {
-        min: 25,
-        sec: 0,
-        color: "text-red-400",
-        colorBg: "bg-red-400",
-        colorBorder: "border-red-400",
-        text: "Pomodoro session",
-        },
-        rest: {
-        min: 5,
-        sec: 0,
-        color: "text-blue-400",
-        colorBg: "bg-blue-400",
-        colorBorder: "border-blue-400",
-        text: "Take a short break",
-        },
-    },
-    now: null,
-    mode: "promodoro",
-    volume: 100,
-    timer: null,
-    pushSubscription: null,
-    durationTarget: null,
+        completed: false,
+        currentTime: null
     });
+      
+    const [state, setState] = useState<TimeTrackerState>({
+        template: [
+            "promodoro",
+            "rest",
+            "promodoro",
+            "rest",
+            "promodoro",
+            "rest",
+            "promodoro",
+            "long",
+        ],
+        currentStep: 0,
+        modes: {
+            long: {
+                label: "Long Rest",
+                min: 15,
+                sec: 0,
+                color: "text-green-400",
+                colorBg: "bg-green-400",
+                colorBorder: "border-green-400",
+            },
+            promodoro: {
+                min: 25,
+                sec: 0,
+                color: "text-red-400",
+                colorBg: "bg-red-400",
+                colorBorder: "border-red-400",
+                text: "Pomodoro session",
+            },
+            rest: {
+                min: 5,
+                sec: 0,
+                color: "text-blue-400",
+                colorBg: "bg-blue-400",
+                colorBorder: "border-blue-400",
+                text: "Take a short break",
+            },
+        },
+        now: null,
+        mode: "promodoro",
+        volume: 100,
+        timer: null,
+        pushSubscription: null,
+        durationTarget: null,
+    });
+
+    useEffect(() => {
+        if (task && task.uid) {
+            setTrack({...track, task_uid: task.uid })
+        }
+    }, [task])
 
     // ui
     const trackerIcon = () => state.now ? 'stop': 'play';
@@ -76,20 +84,22 @@ export default function TimeTracker({ task}) {
   
     setDurationTarget();
 
-    const [targetTime, setTargetTime] = useState(null);
+    const [targetTime, setTargetTime] = useState<DateTime|null>(null);
     
     useEffect(() => {
-        if (track.started_at && state.now) {
+        if (track.started_at && state.now && state.durationTarget) {
             setTargetTime(DateTime.fromJSDate(track.started_at).plus(state.durationTarget));
         } else {
+            onTick(null);
             setTargetTime(null)
         }
-    }, [track.started_at, state.now]);
+    }, [track.started_at, state.now, state.durationTarget]);
       
     const [currentTime, setCurrentTime] = useState(state.durationTarget ? state.durationTarget.toFormat("mm:ss") : "00:00");
-    const updateCurrentTime = (time) => {
-        if (time != currentTime) {
-            setCurrentTime(time)
+    const updateCurrentTime = (timeString: string) => {
+        if (timeString != currentTime) {
+            setCurrentTime(timeString)
+            onTick(track.currentTime)
         }
     }
     useEffect(() => {
@@ -238,3 +248,50 @@ const styles = StyleSheet.create({
         marginRight: 5
     },
 })
+
+
+type TimeTrackerProps = {
+    onPomodoroStarted: (data: any) => {},
+    onPomodoroStoped: (data: any) => {},
+    onTick: (data: any) => {},
+    task: Task,
+}
+
+type TimeTrack = {
+    uid: string | undefined,
+    task_uid: string | undefined,
+    started_at: Date | null ,
+    ended_at: Date | null,
+    type: "promodoro" | 'stopwatch' | 'timer',
+    duration: string | null,
+    target_time: string| null,
+    completed: boolean,
+    currentTime: DurationObject | null
+}
+
+type TimeTrackerState = {
+    template: string[],
+    currentStep: 0,
+    modes: TimeTrackerModes
+    now: null | Date,
+    mode: "promodoro" | 'long' | 'rest',
+    volume: number,
+    timer: null | NodeJS.Timeout,
+    pushSubscription: null,
+    durationTarget: null | DurationObject,
+}
+
+type TimeTrackerModes = {
+    promodoro: TimeTrackerMode,
+    long: TimeTrackerMode,
+    rest: TimeTrackerMode
+}
+
+type TimeTrackerMode = {
+    label: string,
+    min: number,
+    sec: number,
+    color: string,
+    colorBg: string,
+    colorBorder: string,
+}

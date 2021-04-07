@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, StackNavigationProp } from "@react-navigation/stack";
 // 
-import { LoginScreen, RegistrationScreen, ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../screens";
+import { LoginScreen, RegistrationScreen } from "../screens";
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -20,4 +20,21 @@ export default function AuthNavigator() {
           <Stack.Screen name="Registration" component={RegistrationScreen} />
       </Stack.Navigator>
   );
+}
+
+
+export type AuthStackParamList = {
+    Login: undefined,
+    Registration: undefined
+}
+  
+type LoginScreenNavigationProp = StackNavigationProp<AuthStackParamList,'Login'>;
+type RegistrationScreenNavigationProp = StackNavigationProp<AuthStackParamList,'Registration'>;
+  
+export type LoginScreenProps = {
+    navigation: LoginScreenNavigationProp
+}
+
+export type RegistrationScreenProps = {
+    navigation: RegistrationScreenNavigationProp
 }

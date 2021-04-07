@@ -2,58 +2,59 @@ import React, { useRef } from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SHADOWS, SIZES, FONTS, COLORS } from '../config/constants';
+import { Task } from '../utils/data';
 
 const SLIDER_WIDTH = Dimensions.get('window').width + 80
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
 
-export default function TaskGroup({ label, tasks , onPress, color }) {
-    const Slide = ({ item, index }) => {
-        return (
-            <View style={styles.container} key={item.uid}>
-                <View>
+const Slide = ({ item, color }: SlideProps) => {
+    return (
+        <View style={styles.container} key={item.uid}>
+            <View>
+                <View style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <View style={{
+                    flex: 1,
+                    width: '100%',
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                  }}>
                     <View style={{
-                      width: '100%',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <View style={{
-                        flex: 1,
-                        width: '100%',
-                        flexDirection: 'row',
-                        alignItems: 'center'
+                        backgroundColor: color, 
+                        height: 24, 
+                        width: 24 , 
+                        borderRadius: 4,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginRight: 4
                       }}>
-                        <View style={{
-                            backgroundColor: color, 
-                            height: 24, 
-                            width: 24 , 
-                            borderRadius: 4,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginRight: 4
-                          }}>
-                          <FontAwesome5 color='white' name='sticky-note' ></FontAwesome5>
-                        </View>
-                        <Text style={{ ...styles.header, color: COLORS.gray[500]}}>{item.title}</Text>
-                      </View>
-                      <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                        <Text style={{ ...styles.header, color: COLORS.gray[400]}}>{item.duration_ms}</Text>
-                        <Text style={{ ...styles.header, color: COLORS.blue[400], marginLeft: 5, fontWeight: 'bold'}}>{item.due_date}</Text>
-                        <View style={{ marginLeft: 5}}>
-                          <FontAwesome5 color={COLORS.gray[400]} name='ellipsis-v'></FontAwesome5>
-                        </View>
-                      </View>
+                      <FontAwesome5 color='white' name='sticky-note' ></FontAwesome5>
                     </View>
-                    <Text style={styles.body}> {item.description} </Text>
+                    <Text style={{ ...styles.header, color: COLORS.gray[500]}}>{item.title}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{ ...styles.header, color: COLORS.gray[400]}}>{item.duration_ms}</Text>
+                    <Text style={{ ...styles.header, color: COLORS.blue[400], marginLeft: 5, fontWeight: 'bold'}}>{item.due_date}</Text>
+                    <View style={{ marginLeft: 5}}>
+                      <FontAwesome5 color={COLORS.gray[400]} name='ellipsis-v'></FontAwesome5>
+                    </View>
+                  </View>
                 </View>
+                <Text style={styles.body}> {item.description} </Text>
             </View>
-        );
-    }
+        </View>
+    );
+}
 
-    const separator = () => {
-      return (<View style={{width: '100%', height: 2, backgroundColor: '#efefef', marginVertical: 10 }}></View>)
-    }
+const separator = () => {
+  return (<View style={{width: '100%', height: 2, backgroundColor: '#efefef', marginVertical: 10 }}></View>)
+}
 
+export default function TaskGroup({ label, tasks , onPress, color } : TaskGroupProps) {
     return (
         <View style={{
           marginTop: SIZES.padding,
@@ -73,7 +74,7 @@ export default function TaskGroup({ label, tasks , onPress, color }) {
               keyExtractor={(item, index) => `${index}-${item.uid}`}
               data={tasks}
               ItemSeparatorComponent={separator}
-              renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
+              renderItem={props => <Slide {...props} color={color}></Slide>}
           />
           { tasks.length ?  null : 
             <View style={{
@@ -110,4 +111,17 @@ const styles = StyleSheet.create({
       fontSize: 18,
       marginTop: 5
     }
-  })
+})
+
+type TaskGroupProps = {
+  onPress: () => {},
+  label: string,
+  color: string,
+  tasks: any[]
+}
+
+type SlideProps = {
+  item: Task,
+  color: string,
+  index: number
+}

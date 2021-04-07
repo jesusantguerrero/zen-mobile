@@ -13,7 +13,7 @@ export default function TodoScroll({ items, onPress }) {
             <Pressable 
                 style={styles.container} 
                 key={index} 
-                onPress={onPress.bind(null, item)}
+                onPress={() => onPress(item)}
             >
                 <View style={{
                       flex: 1,
@@ -42,7 +42,7 @@ export default function TodoScroll({ items, onPress }) {
                           }}>
                           <FontAwesome5 color='white' name='sticky-note' ></FontAwesome5>
                         </View>
-                        <Text style={{ ...styles.header, color: COLORS.gray[500]}}>{item.title}</Text>
+                        <Text style={{ ...styles.header, color: 'white'}}>{item.title}</Text>
                       </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', height: 40 }}>
                       <View style={{ flexDirection: 'row'}}>
@@ -52,10 +52,10 @@ export default function TodoScroll({ items, onPress }) {
                     </View>
                 </View>
                 <View style={{ flex: 1, paddingHorizontal: SIZES.padding }}>
-                  <Text style={{ color: item.description ? 'white' : COLORS.primary }}> { item.description || 'No Description provided' }</Text>
+                  <Text style={{ color: item.description ? 'white' : COLORS.gray[400] }}> { item.description || 'No Description provided' }</Text>
                 </View>
                 <View style={{ 
-                  backgroundColor: 'white', 
+                  backgroundColor: COLORS.bgPanelColor, 
                   paddingHorizontal: SIZES.padding, 
                   flexDirection: 'row',
                   justifyContent: 'space-between',
@@ -64,13 +64,13 @@ export default function TodoScroll({ items, onPress }) {
                   paddingVertical: 8
                 }}>
                   <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <FontAwesome5  name="check-circle" size={14} color="black"></FontAwesome5>
-                    <Text style={{...styles.body, marginLeft: 3 }}> Mark as done </Text>
+                    <FontAwesome5  name="check-circle" size={14} color="white"></FontAwesome5>
+                    <Text style={{...styles.body, marginLeft: 3, color: 'white'}}> Mark as done </Text>
                   </TouchableOpacity>
             
                   <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <FontAwesome5 key="fa-home" name="calendar" size={14} color={COLORS.blue[400]}></FontAwesome5>
-                        <Text style={{ ...styles.bodyText, color: COLORS.blue[400], marginLeft: 5}}>{item.due_date || 'Set due date'}
+                        <FontAwesome5 key="fa-home" name="calendar" size={14} color={COLORS.blue[300]}></FontAwesome5>
+                        <Text style={{ ...styles.bodyText, color: COLORS.blue[300], marginLeft: 5 , fontWeight: 'bold'}}>{item.due_date || 'Set due date'}
                         </Text>
                   </TouchableOpacity>
                 </View>
@@ -139,7 +139,7 @@ export default function TodoScroll({ items, onPress }) {
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: "rgba(0,0,0,.6)",
+      backgroundColor: COLORS.bgPanelColor,
       borderRadius: 8,
       width: windowWidth - 48,
       marginLeft: 24,

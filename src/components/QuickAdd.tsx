@@ -1,13 +1,17 @@
-import React from "react";
-import { TextInput, View, TouchableOpacity, Text } from "react-native"
+import React, { useEffect, useRef } from "react";
+import { TextInput, View, TouchableOpacity, Text, Animated, Easing } from "react-native"
 import { FontAwesome5 } from "@expo/vector-icons"
-import { COLORS, FONTS, SIZES } from "../config/constants";
+import { COLORS, SIZES } from "../config/constants";
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, toDate } from "date-fns";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
+import firebase from "firebase";
+import { Task } from "../utils/data";
+import { isDate } from "date-fns/esm";
 
-export default function QuickAdd ({ onSave, onCancel, user}) {
-    const [task, setTask] = useState({
+export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
+    const [task, setTask] = useState<Task>({
+        uid: undefined,
         title: "",
         description: "",
         due_date: "",
@@ -25,6 +29,7 @@ export default function QuickAdd ({ onSave, onCancel, user}) {
 
     const clearForm = () => {
         setTask({
+            uid: undefined,
             title: "",
             description: "",
             due_date: "",
@@ -45,19 +50,46 @@ export default function QuickAdd ({ onSave, onCancel, user}) {
 
     const saveTask = () => {
         const formData = { ...task }
-        formData.due_date = formData.due_date ? format(formData.due_date, "yyyy-MM-dd") : ""
+        if (typeof formData.due_date != 'string' && isDate(formData.due_date)) {
+            formData.due_date = format(formData.due_date, "yyyy-MM-dd");
+        }
         saveTaskToDb(formData).then(() => {
             clearForm()
             onSave(formData)
         });
     }
-    return (<View style={{ 
+
+    const viewHeight = useRef(new Animated.Value(60)).current; 
+
+    useEffect(() => {
+      Animated.timing(viewHeight, {
+          toValue: 120,
+          duration: 200,
+          useNativeDriver: false
+      }).start()
+      
+      return () => {
+        Animated.timing(viewHeight, {
+            toValue: 60,
+            duration: 200,
+            useNativeDriver: false
+        }).start()
+
+      }
+    }, [])
+
+    return (<Animated.View style={{ 
         padding: SIZES.padding, 
         backgroundColor: '#191F30',  
+        height: viewHeight,
         borderTopLeftRadius: 14,
         borderTopRightRadius: 14 
     }}>
       <View >
+        <View style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', marginBottom: 10 }}>
+            <FontAwesome5 color='white' name='list'  size={16}></FontAwesome5>
+            <Text style={{ color: 'white', marginLeft: 5, textTransform: 'capitalize' }}> { task.matrix }</Text>
+        </View>
         <TextInput 
             placeholder="Add quick task" 
             style={{ color: 'white' }} 
@@ -70,17 +102,13 @@ export default function QuickAdd ({ onSave, onCancel, user}) {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15}}>
         <View style={{ flexDirection: 'row'}}>
           <View style={{ paddingLeft: 5, paddingRight: 5 }}>
-            <FontAwesome5 color='white' name='calendar'  size={16}></FontAwesome5>
+            <FontAwesome5 color='white' name='calendar'  size={20}></FontAwesome5>
           </View>
           <View style={{ paddingLeft: 5, paddingRight: 5 }}>
-            <FontAwesome5 color='white' name='tags'  size={16}></FontAwesome5>
+            <FontAwesome5 color='white' name='tags'  size={20}></FontAwesome5>
           </View>
           <View style={{ paddingLeft: 5, paddingRight: 5 }}>
-            <FontAwesome5 color='white' name='user'  size={16}></FontAwesome5>
-          </View>
-          <View style={{ paddingLeft: 5, paddingRight: 5 , flexDirection: 'row' }}>
-            <FontAwesome5 color='white' name='user'  size={16}></FontAwesome5>
-            <Text style={{ color: 'white'}}> { task.matrix }</Text>
+            <FontAwesome5 color='white' name='user'  size={20}></FontAwesome5>
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -88,9 +116,16 @@ export default function QuickAdd ({ onSave, onCancel, user}) {
               <Text style={{color: COLORS.red[400], fontWeight: 'bold'}}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ marginLeft: 10 }}  onPress={() => { saveTask() }}>
-              <FontAwesome5 color={COLORS.green[400]} name='paper-plane' size={16} ></FontAwesome5>
+              <FontAwesome5 color={COLORS.green[400]} name='paper-plane' size={20} ></FontAwesome5>
           </TouchableOpacity>
         </View>
       </View>
-    </View>)
+    </Animated.View>)
+}
+
+
+type QuickAddProps = {
+  onSave: (task: Task) => {},
+  onCancel: () => {},
+  user: firebase.User
 }

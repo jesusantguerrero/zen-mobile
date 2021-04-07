@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Image, ImageBackground, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { login, loginWithProvider, firebase } from "../../utils/useFirebase";
+import { login, firebase } from "../../utils/useFirebase";
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as WebBrowser from "expo-web-browser"
 import * as Google from 'expo-auth-session/providers/google';
 import { WEB_CLIENT_ID } from '../../utils/keys';
 import { FontAwesome5 } from "@expo/vector-icons"
 import styles from './styles';
+import auth from '@react-native-firebase/auth';
 import { images } from "../../config/constants";
+import { LoginScreenProps } from '../../navigators/auth';
 
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen({navigation}: LoginScreenProps) {
     const [email, setEmail] = useState('')
     const [loadingMethod, setLoadingMethod] = useState('')
     const [password, setPassword] = useState('')
@@ -35,8 +37,7 @@ export default function LoginScreen({navigation}) {
         setLoadingMethod('email')
         login(email, password)
             .then(({ user }) => {
-                    setLoadingMethod('')
-                navigation.navigate('Zenboard', {user: user})
+                setLoadingMethod('')
             }).catch(err => {
                 setLoadingMethod('')
                 console.log(err)
@@ -50,12 +51,13 @@ export default function LoginScreen({navigation}) {
         }
         setLoadingMethod('google')
         try {
+            await GoogleSignIn.askForPlayServicesAsync();
             const { type, user } = await GoogleSignIn.signInAsync();
 
             if (type === 'success') {
                 const accessToken  = user?.auth?.accessToken
                 const idToken =  user?.auth?.idToken
-                if (idToken && accessToken) {
+                if (idToken || accessToken) {
                     signWithFirebase(idToken, accessToken);
                 }
               } else {
@@ -68,22 +70,34 @@ export default function LoginScreen({navigation}) {
         }
     }
 
-    const signWithFirebase = async(idToken: string, accessToken: string) => {
-        console.log(idToken, 'hola?');
-        const credential = firebase.auth().GoogleAuthProvider.getCredential(idToken, accessToken)
-        console.log(credential, 'hola?');
-        await firebase.auth().signInWithCredential(credential)
+    const signWithFirebase = async(idToken: string = '', accessToken: string = '') => {
+        try  {
+            const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken)
+            await firebase.auth().signInWithCredential(credential)
+            ToastAndroid.showWithGravity("Logueado bien", ToastAndroid.LONG, ToastAndroid.BOTTOM)
+        } catch (e) {
+             // Create a Google credential with the token
+             ToastAndroid.showWithGravity("Logueado mal" + e.toString(), ToastAndroid.LONG, ToastAndroid.BOTTOM)
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            // Sign-in the user with the credential
+            auth().signInWithCredential(googleCredential);
+            ToastAndroid.showWithGravity("Logueado bien", ToastAndroid.LONG, ToastAndroid.BOTTOM)
+        }
+
     }
 
     useEffect(() => {
         if (response?.type === 'success') {
             const { authentication } = response;
-            console.log(authentication);
             if (authentication?.state) {
                 signWithFirebase(authentication?.state, authentication?.accessToken)
             }
         }
     }, [response])
+
+    useEffect(() => {
+        GoogleSignIn.initAsync()
+    }, [])
 
     return (
         <ImageBackground source={images.zenTemple} style={styles.container}>
@@ -126,7 +140,7 @@ export default function LoginScreen({navigation}) {
                         <TouchableOpacity
                             style={styles.googleButton}
                             disabled={!!loadingMethod}
-                            onPress={() => promptAsync()}>
+                            onPress={() => onLoginCustomPressNative()}>
                             <Text style={styles.buttonTitle}>Login with Google</Text>
                             { loadingMethod != 'google' ? null : (<View style={{ marginLeft: 5}}>
                                 <FontAwesome5 name='spinner' color='white'></FontAwesome5>

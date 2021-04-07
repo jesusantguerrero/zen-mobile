@@ -1,8 +1,7 @@
 import "react-native-gesture-handler"
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, StatusBar, LogBox } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
-import { COLORS } from "./src/config/constants"; 
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -15,6 +14,7 @@ import {useFonts, Roboto_400Regular, Roboto_900Black, Roboto_700Bold } from "@ex
 export default function App() {
   const [isLoading, setIsLoading ] = useState(true);
   const [user, setUser] = useState(null); 
+  // LogBox.ignoreLogs(['Setting a timer']);
   let [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_900Black,
