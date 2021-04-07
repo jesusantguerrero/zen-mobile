@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { images, FONTS, SIZES } from "../config/constants";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/core";
 
-export default function AppHeader({ navigation, user }) {
+
+export default function AppHeader({ user } : AppHeaderProps) {
+    const navigation = useNavigation();
     const [ profileData, setProfileData ] = useState({
         photo: '',
         name: '',
@@ -12,14 +15,13 @@ export default function AppHeader({ navigation, user }) {
 
     useEffect(() => {
         if (user) {
-            const provider = user.providerData[0];
-            const name = provider.displayName || provider.email;
+            const provider = user;
+            const name = provider.displayName || provider.email || user.email;
         
             setProfileData({
-              photo:  provider.photoURL,
+              photo:  provider.photoURL || '',
               name: name,
               initials: name.split(' ').map( (name: string) => name[0].toUpperCase()).join('')
-        
             })
         }
       }, [user])
@@ -45,7 +47,12 @@ export default function AppHeader({ navigation, user }) {
             alignItems: 'center' 
           }}
         > 
-          <FontAwesome5  name="user" size={14} color="black"></FontAwesome5>
+           { profileData.photo ? <Image source={profileData.photo}/>:
+          <FontAwesome5  name="user" size={14} color="black"></FontAwesome5>}
         </TouchableOpacity>
       </View>)
+}
+
+type AppHeaderProps = {
+  user: firebase.User
 }

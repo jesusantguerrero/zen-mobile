@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     },
     dot: {
       borderRadius: SIZES.radius,
-      backgroundColor: COLORS.green[400],
+      backgroundColor: COLORS.green[600],
       marginHorizontal: SIZES.radius / 2
 
     }

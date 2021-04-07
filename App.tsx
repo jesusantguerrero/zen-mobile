@@ -1,6 +1,6 @@
 import "react-native-gesture-handler"
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, StatusBar, LogBox } from 'react-native';
+import { StyleSheet, StatusBarStyle, StatusBar} from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
@@ -10,6 +10,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import HomeNavigator from "./src/navigators/home";
 import AuthNavigator from "./src/navigators/auth";
 import {useFonts, Roboto_400Regular, Roboto_900Black, Roboto_700Bold } from "@expo-google-fonts/roboto"
+import AuthContext from "./src/utils/AuthContext";
 
 export default function App() {
   const [isLoading, setIsLoading ] = useState(true);
@@ -44,13 +45,16 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
+        animated={true}
         translucent={false}
         backgroundColor='rgba(255,255,255,1)'
         barStyle='dark-content'
       />
-        <NavigationContainer>
-            { user ? <HomeNavigator user={user}></HomeNavigator> : <AuthNavigator></AuthNavigator>}
-        </NavigationContainer>
+        <AuthContext.Provider value={{ extraData: user }}>
+          <NavigationContainer>
+              { user ? <HomeNavigator></HomeNavigator> : <AuthNavigator></AuthNavigator>}
+          </NavigationContainer>
+        </AuthContext.Provider>
       </SafeAreaView>
     </SafeAreaProvider>
   );

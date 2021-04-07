@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Image, ImageBackground, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Image, ImageBackground, Platform, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { login, firebase } from "../../utils/useFirebase";
 import * as GoogleSignIn from 'expo-google-sign-in';
@@ -40,7 +40,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
                 setLoadingMethod('')
             }).catch(err => {
                 setLoadingMethod('')
-                console.log(err)
+                ToastAndroid.show(err.toString(), ToastAndroid.LONG)
             })
       
     }
@@ -77,7 +77,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
             ToastAndroid.showWithGravity("Logueado bien", ToastAndroid.LONG, ToastAndroid.BOTTOM)
         } catch (e) {
              // Create a Google credential with the token
-             ToastAndroid.showWithGravity("Logueado mal" + e.toString(), ToastAndroid.LONG, ToastAndroid.BOTTOM)
+            ToastAndroid.showWithGravity("Logueado mal" + e.toString(), ToastAndroid.LONG, ToastAndroid.BOTTOM)
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             // Sign-in the user with the credential
             auth().signInWithCredential(googleCredential);
@@ -96,7 +96,9 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
     }, [response])
 
     useEffect(() => {
-        GoogleSignIn.initAsync()
+        if (Platform.OS == 'android') {
+            GoogleSignIn.initAsync()
+        }
     }, [])
 
     return (
@@ -140,7 +142,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
                         <TouchableOpacity
                             style={styles.googleButton}
                             disabled={!!loadingMethod}
-                            onPress={() => onLoginCustomPressNative()}>
+                            onPress={() => Platform.OS == 'android' ? onLoginCustomPressNative() : promptAsync()}>
                             <Text style={styles.buttonTitle}>Login with Google</Text>
                             { loadingMethod != 'google' ? null : (<View style={{ marginLeft: 5}}>
                                 <FontAwesome5 name='spinner' color='white'></FontAwesome5>

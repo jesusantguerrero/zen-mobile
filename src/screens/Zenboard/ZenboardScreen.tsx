@@ -52,7 +52,9 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   // main task
   const setMainTask = async (task: Task) => {
     const current = {...task}
-    current.tracks = await getAllTracksOfTask(task.uid)
+    if (task.uid) {
+      current.tracks = await getAllTracksOfTask(task.uid)
+    }
     setCurrentTask(current)
     setShowLineUp(false);
   }
