@@ -9,7 +9,7 @@ import firebase from "firebase";
 import { Task } from "../utils/data";
 import { isDate } from "date-fns/esm";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ModalSelector from 'react-native-modal-selector'
+// import ModalSelector from 'react-native-modal-selector'
 
 
 const MatrixSelector = ({ value, placeholder} : { value: string, placeholder: string }) => {
@@ -117,13 +117,13 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         borderTopRightRadius: 14 
     }}>
       <View >
-        <ModalSelector
+        {/* <ModalSelector
             data={matrix}
             visible={showMatrix}  
             onChange={(option)=> setTask({...task, matrix: option.key })}
             onModalClose={() => setShowMatrix(false)}>
               <MatrixSelector value={task.matrix} placeholder="Set Quadrant">  </MatrixSelector>
-        </ModalSelector>
+        </ModalSelector> */}
         <TextInput 
             placeholder="Add quick task" 
             style={{ color: 'white' }} 

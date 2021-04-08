@@ -8,7 +8,8 @@ const getDate = (task: Task) => {
     return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
 }
 
-export function useTaskFirestore(user: firebase.User) {
+export function useTaskFirestore() {
+    const user = firebase.auth().currentUser
     const saveTask = (task: Task) => {
         if (task.due_date) {
             task.due_date = getDate(task)
@@ -31,7 +32,7 @@ export function useTaskFirestore(user: firebase.User) {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
-        return trackRef.update(task, { merge: true })
+        return trackRef.update(task)
         .then(() => {
             return task.uid;
         })

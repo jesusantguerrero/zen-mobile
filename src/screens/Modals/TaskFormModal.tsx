@@ -136,7 +136,6 @@ export default function TaskFormModal({ navigation, user, task }) {
           label={selectedMatrix.label}
           tasks={selectedList}
           color={selectedMatrix.color}
-          onPress={() => console.log('hola')}
         >
         </TaskGroup>
       </ScrollView>

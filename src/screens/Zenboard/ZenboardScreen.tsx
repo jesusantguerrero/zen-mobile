@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity } from 'react-native';
 import TodoScroll from "../../components/ScrollCards";
 import TaskView from "../../components/TaskView";
-import TimeTracker from "../../components/TimeTracker";
+import TimeTracker, { TimeTrack } from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { images, SIZES, FONTS, COLORS } from "../../config/constants";
@@ -12,25 +12,26 @@ import { LinearGradient } from "expo-linear-gradient";
 import firebase from 'firebase';
 import { Task } from '../../utils/data';
 import { ZenboardScreenProps } from "../../navigators/main"
+import { Interval } from 'luxon';
 
 export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   const { extraData } = useContext(AuthContext);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<TimeTrack | null>(null);
   const [showLineUp, setShowLineUp] = useState(false);
   const [ todo, setTodo ] = useState([])
-  const { getAllTracksOfTask } = useTrackFirestore();
-
+  const { getTaskByMatrix, mapTask, updateTask } = useTaskFirestore()
   //  Line up list
   const getMatrix = (matrix: string, callback: Function): null|Function => {
     let unsubscribe: null|Function = null;
       if (extraData) {
-        const { getTaskByMatrix, mapTask } = useTaskFirestore(extraData)
+        
         getTaskByMatrix(matrix).then((collectionRef: firebase.firestore.Query) => {
           unsubscribe = collectionRef.onSnapshot((snap) => {
             const results:Array<Task> = [];
             snap.forEach((doc) => {
               const data = doc.data();
-              return results.push(mapTask(data, data.id));
+              return results.push(mapTask(data, doc.id));
             });
             setMainTask(results[0])
             callback(results)
@@ -49,7 +50,9 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
       }
   }, [])
 
+  
   // main task
+  const { getAllTracksOfTask, saveTrack, updateTrack } = useTrackFirestore();
   const setMainTask = async (task: Task) => {
     const current = {...task}
     if (task.uid) {
@@ -80,12 +83,46 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
 
   // tracker
   const [tracker, setTracker] = useState(null);
-  const saveTrack = () => {
-
+  const saveLocalTrack = (track: TimeTrack) => {
+    if (currentTrack && currentTrack?.uid) {
+      updateLocalTrack({...track, uid: currentTrack.uid})
+    } else {
+      createTrack(track)
+    }
   }
 
-  const updateTrack = () => {
-    
+  const createTrack = (track: TimeTrack, ) => {
+    if (currentTask) {
+      track.uid = null
+      track.task_uid = currentTask.uid || null;
+      track.description = currentTask.title;
+      const formData = { ...track }
+      formData.currentTime = null
+      saveTrack(formData)
+        .then(uid => {
+          formData.uid = uid;
+          setCurrentTrack(formData);
+        })
+    }
+  }
+
+  const updateLocalTrack = (track: TimeTrack) => {
+      const formData = {...currentTrack, ...track}
+      if (formData.started_at && formData.ended_at && currentTask) {
+        formData.task_uid = currentTask.uid;
+        const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
+        formData.duration_ms = duration.as('milliseconds');
+        formData.duration_iso = duration.toISO();
+        formData.currentTime = null;
+        
+        updateTrack(formData)
+        .then(() => {
+          if (currentTask) {
+            currentTask.tracks.push(formData);
+            setCurrentTrack(null);
+          }
+        })
+      }
   }
 
   return (
@@ -102,13 +139,12 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
       <AppHeader navigation={navigation} user={extraData}></AppHeader>
       <View style={{width: '100%', paddingHorizontal: SIZES.padding, paddingBottom: SIZES.padding }}>
         <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { extraData?.displayName || extraData?.email }</Text>
-        <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}> 4 April, 2021 </Text>
       </View>
       <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
         <TimeTracker 
           task={currentTask} 
-          onPomodoroStarted={saveTrack} 
-          onPomodoroStoped={updateTrack} 
+          onPomodoroStarted={saveLocalTrack} 
+          onPomodoroStopped={saveLocalTrack} 
           onTick={setTracker}
         />
       </View>
@@ -133,7 +169,7 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
           paddingVertical: SIZES.padding,
           paddingHorizontal: viewPadding
         }}>
-          <TaskView task={currentTask} tracker={tracker}></TaskView>
+          <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
         </Animated.View>
         : 
         <TodoScroll

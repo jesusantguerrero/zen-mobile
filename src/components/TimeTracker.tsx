@@ -5,7 +5,7 @@ import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"
 import { Task } from '../utils/data';
 
-export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped, onTick, config } : TimeTrackerProps) {
+export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped, onTick, config } : TimeTrackerProps) {
     const [track, setTrack] = useState<TimeTrack>({
         uid: undefined,
         task_uid: undefined,
@@ -100,7 +100,6 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
         if (track.started_at && state.now && state.durationTarget) {
             setTargetTime(DateTime.fromJSDate(track.started_at).plus(state.durationTarget));
         } else {
-            onTick(null);
             setTargetTime(null)
         }
     }, []);
@@ -109,7 +108,9 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
     const updateCurrentTime = (timeString: string) => {
         if (timeString != currentTime) {
             setCurrentTime(timeString)
-            onTick(track.currentTime)
+            if (state.now) {
+                onTick(track.currentTime)
+            }
         }
     }
 
@@ -160,15 +161,36 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
     const toggleTracker = () => {
         track.started_at ? stop(null, true) : play();
     };
+
+    const isPomodoro = () => {
+        return state.mode == 'promodoro';
+      }
     
     const play = () => {    
         const startDate = new Date(Date.now())
         setTrack({...track, started_at: startDate});
         setState({...state, now: startDate });
+
+        if (isPomodoro()) {
+            onPomodoroStarted(track);
+        }
+
     };
     
     const stop = (shouldCallNextMode: boolean|null = true, silent: boolean|null = false) => {
-        setTrack({...track, ended_at: new Date(Date.now()) });
+        const endDate = new Date(Date.now()) 
+        setTrack((oldTrack) => {return {...oldTrack, ended_at: endDate}});
+        if (isPomodoro() && state.now) {
+            if (track.started_at) {
+                const duration = Interval.fromDateTimes(track.started_at, endDate).toDuration();
+                onPomodoroStopped({ 
+                    ...track,
+                    ended_at: endDate,
+                    duration_ms: duration.as('milliseconds'),
+                    duration_iso: duration.toISO(),
+                });
+            }
+        }
     
         const wasRunning = Boolean(state.now);
         const previousMode = state.mode;
@@ -178,6 +200,7 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
         if (state.timer) {
             clearInterval(state.timer);
             setState({...state, now: null, timer: null });
+            onTick(null)
         }   
     };
     
@@ -266,22 +289,25 @@ const styles = StyleSheet.create({
 
 type TimeTrackerProps = {
     onPomodoroStarted: (data: any) => {},
-    onPomodoroStoped: (data: any) => {},
+    onPomodoroStopped: (data: any) => {},
     onTick: (data: any) => {},
     task: Task,
     config: TimeTrackerConfig
 }
 
-type TimeTrack = {
-    uid: string | undefined,
-    task_uid: string | undefined,
+export type TimeTrack = {
+    uid: string | null,
+    task_uid: string | null,
+    description: string | null,
     started_at: Date | null ,
     ended_at: Date | null,
     type: "promodoro" | 'stopwatch' | 'timer',
     duration: string | null,
     target_time: string| null,
     completed: boolean,
-    currentTime: Duration| null
+    currentTime: Duration | null
+    duration_ms: number
+    duration_iso: string
 }
 
 type TimeTrackerState = {

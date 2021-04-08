@@ -1,5 +1,5 @@
 export type Task = {
-    uid: string | undefined | null,
+    uid: string | null,
     title: string,
     description: string,
     due_date: string | Date,

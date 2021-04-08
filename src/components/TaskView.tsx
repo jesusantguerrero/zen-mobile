@@ -6,7 +6,7 @@ import { useDateTime } from "../utils/useDateTime";
 import { Task } from '../utils/data';
 import { Duration } from 'luxon';
 
-export default function TaskView({ task, tracker }: TaskViewProps) {
+export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewProps) {
 
     const { formatDurationFromMs } = useDateTime()
     const [timeTracked, setTimeTracked] = useState("00:00:00");
@@ -27,10 +27,35 @@ export default function TaskView({ task, tracker }: TaskViewProps) {
     }
 
     useEffect(() => {
+        console.log(tracker)
+        if (task && !tracker && task.tracks.length) {
+            const savedTime = timeReducer(task.tracks)
+            const activeTimer = getActiveTimer(tracker);
+            setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
+
+            onUpdateTimeTask({
+                uid: task.uid,
+                duration_ms: timeTracked,
+                duration: savedTime
+            })
+            console.log("Time updated", task.tracks)
+        }
+    }, [tracker])
+
+    useEffect(() => {
         if (task) {
             const savedTime = timeReducer(task.tracks)
             const activeTimer = getActiveTimer(tracker);
             setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
+
+            if (!tracker && task.duration !== savedTime) { 
+                onUpdateTimeTask({
+                    uid: task.uid,
+                    duration_ms: timeTracked,
+                    duration: savedTime
+                })
+                console.log("Time updated")
+            }
         }
     }, [tracker, task])
 
@@ -59,13 +84,13 @@ export default function TaskView({ task, tracker }: TaskViewProps) {
              <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                 <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.blue[400]}></FontAwesome5>
                 <Text style={{...FONTS.body4,  color: COLORS.blue[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
-                    Started: { task.tracks.filter(track => track.completed).length }
+                    Started: { task.tracks.length }
                 </Text>
             </View> 
              <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                 <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.green[400]}></FontAwesome5>
                 <Text style={{...FONTS.body4,  color: COLORS.green[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
-                    Completed: { task.tracks.length }
+                    Completed: {  task.tracks.filter(track => track.completed).length }
                 </Text>
             </View> 
           </View>}
@@ -123,5 +148,6 @@ const styles = StyleSheet.create({
 
 type TaskViewProps = {
     task: Task,
-    tracker: Duration
+    tracker: Duration,
+    onUpdateTimeTask: (data: any) => {}
   }

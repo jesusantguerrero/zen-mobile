@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Task } from '../utils/data';
 
 export default function TaskItem({ item } : TaskItemProps) {
-  console.log(item)
     return (
         <View style={styles.entityContainer}>
           <View style={{ flex: 6 }}>
