@@ -8,10 +8,22 @@ import { useTaskFirestore } from "../utils/useTaskFirestore"
 import firebase from "firebase";
 import { Task } from "../utils/data";
 import { isDate } from "date-fns/esm";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import ModalSelector from 'react-native-modal-selector'
+
+
+const MatrixSelector = ({ value, placeholder} : { value: string, placeholder: string }) => {
+  return (
+    <TouchableOpacity style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', marginBottom: 10 }}>
+      <FontAwesome5 color='white' name='list'  size={16}></FontAwesome5>
+      <Text style={{ color: 'white', marginLeft: 5, textTransform: 'capitalize' }}> { value || placeholder }</Text>
+    </TouchableOpacity>
+  )
+}
 
 export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
     const [task, setTask] = useState<Task>({
-        uid: undefined,
+        uid: null,
         title: "",
         description: "",
         due_date: "",
@@ -26,6 +38,16 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         commit_date: null,
         matrix: "todo",
     })
+    const matrix = [
+      {key: 'todo', label: 'Todo'}, 
+      {key: 'schedule', label: 'Schedule'}, 
+      {key: 'delegate', label: 'Delegate'}, 
+      {key: 'delete', label: 'Delete'}, 
+      {key: 'backlog', label: 'Backlog'}
+    ];
+    const [showMatrix, setShowMatrix] = useState(false)
+    const [show, setShow] = useState(false)
+    const [date, setDate] = useState(new Date())
 
     const clearForm = () => {
         setTask({
@@ -63,7 +85,7 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
 
     useEffect(() => {
       Animated.timing(viewHeight, {
-          toValue: 120,
+          toValue: 150,
           duration: 200,
           useNativeDriver: false
       }).start()
@@ -78,6 +100,15 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
       }
     }, [])
 
+    const onChangeDate = (event, selectedDate: Date) => {
+      const currentDate = selectedDate;
+      if (currentDate) {
+        setDate(currentDate);
+        setTask({ ...task, due_date: format(currentDate, 'yyyy-MM-dd') });
+      }
+      setShow(false);
+    };
+
     return (<Animated.View style={{ 
         padding: SIZES.padding, 
         backgroundColor: '#191F30',  
@@ -86,24 +117,27 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         borderTopRightRadius: 14 
     }}>
       <View >
-        <View style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', marginBottom: 10 }}>
-            <FontAwesome5 color='white' name='list'  size={16}></FontAwesome5>
-            <Text style={{ color: 'white', marginLeft: 5, textTransform: 'capitalize' }}> { task.matrix }</Text>
-        </View>
+        <ModalSelector
+            data={matrix}
+            visible={showMatrix}  
+            onChange={(option)=> setTask({...task, matrix: option.key })}
+            onModalClose={() => setShowMatrix(false)}>
+              <MatrixSelector value={task.matrix} placeholder="Set Quadrant">  </MatrixSelector>
+        </ModalSelector>
         <TextInput 
             placeholder="Add quick task" 
             style={{ color: 'white' }} 
             onChangeText={(text) => setTask((oldTask) => {return {...oldTask, title: text }})}
 
         >
-
         </TextInput>
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15, alignItems: 'center' }}>
         <View style={{ flexDirection: 'row'}}>
-          <View style={{ paddingLeft: 5, paddingRight: 5 }}>
+          <TouchableOpacity onPress={() => setShow(true)} style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', alignItems: 'center' }}>
             <FontAwesome5 color='white' name='calendar'  size={20}></FontAwesome5>
-          </View>
+            <Text> { task.due_date }</Text>
+          </TouchableOpacity>
           <View style={{ paddingLeft: 5, paddingRight: 5 }}>
             <FontAwesome5 color='white' name='tags'  size={20}></FontAwesome5>
           </View>
@@ -115,11 +149,22 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
           <TouchableOpacity onPress={onCancel}>
               <Text style={{color: COLORS.red[400], fontWeight: 'bold'}}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 10 }}  onPress={() => { saveTask() }}>
-              <FontAwesome5 color={COLORS.green[400]} name='paper-plane' size={20} ></FontAwesome5>
+          <TouchableOpacity style={{ marginLeft: 15, backgroundColor: COLORS.green[600], height: 40, width: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 35 }}  onPress={() => { saveTask() }}>
+              <FontAwesome5 color='white' name='paper-plane' size={20} ></FontAwesome5>
           </TouchableOpacity>
         </View>
       </View>
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode='date'
+          is24Hour={true}
+          display="default"
+          textColor="red"
+          onChange={onChangeDate}
+        />
+      )}
     </Animated.View>)
 }
 

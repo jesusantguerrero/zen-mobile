@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity } from 'react-native';
-import TodoScroll from "../../components/TodoScroll";
+import TodoScroll from "../../components/ScrollCards";
 import TaskView from "../../components/TaskView";
 import TimeTracker from "../../components/TimeTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
@@ -120,7 +120,7 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
           paddingHorizontal: SIZES.padding
           
         }}>
-        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup' : 'Focused'} </Text>
+        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup: Todo' : 'Focused'} </Text>
         <TouchableOpacity
           onPress={() => setShowLineUp(!showLineUp)}
         >

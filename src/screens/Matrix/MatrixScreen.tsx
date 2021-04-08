@@ -5,6 +5,7 @@ import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
 import AuthContext from '../../utils/AuthContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function MatrixScreen({ navigation }) {
   const [mode, setMode] = useState('zen');
@@ -74,15 +75,16 @@ export default function MatrixScreen({ navigation }) {
           position: 'relative'
         }}
       >
-        <ImageBackground source={images.zenTemple} style={styles.containerHeader}>
-          <View style={{
-            width: '100%', 
-            height: '100%', 
-            backgroundColor:'#000', 
-            opacity: .6, 
-            marginBottom: 15, 
-            position: 'absolute'
-          }} />
+        <ImageBackground source={images.temple} style={styles.containerHeader}>
+          <LinearGradient
+            colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)' ]}
+            locations={[0, 0.5, 0.7]}
+            style={{
+              width: '100%', 
+              height: '100%',
+              position: 'absolute'
+            }}
+          />
         </ImageBackground>
         <AppHeader navigation={navigation} user={extraData}></AppHeader>
           <View style={{
@@ -162,7 +164,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     overflow: 'hidden',
-     ...SHADOWS.shadow1
+     ...SHADOWS.shadow1,
+     marginBottom: 200
   },
   container: {
     flex: 1,

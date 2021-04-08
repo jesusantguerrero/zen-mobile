@@ -8,7 +8,6 @@ import * as Google from 'expo-auth-session/providers/google';
 import { WEB_CLIENT_ID } from '../../utils/keys';
 import { FontAwesome5 } from "@expo/vector-icons"
 import styles from './styles';
-import auth from '@react-native-firebase/auth';
 import { images } from "../../config/constants";
 import { LoginScreenProps } from '../../navigators/auth';
 

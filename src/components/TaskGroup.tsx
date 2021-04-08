@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, FlatList, Pressable, ViewProperties, StyleSheetProperties } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { SHADOWS, SIZES, FONTS, COLORS } from '../config/constants';
 import { Task } from '../utils/data';
@@ -54,23 +54,23 @@ const separator = () => {
   return (<View style={{width: '100%', height: 2, backgroundColor: '#efefef', marginVertical: 10 }}></View>)
 }
 
-export default function TaskGroup({ label, tasks , onPress, color } : TaskGroupProps) {
+export default function TaskGroup({ label, tasks , onPress, color, style: outerStyles } : TaskGroupProps) {
     return (
         <View style={{
           marginTop: SIZES.padding,
           marginHorizontal: SIZES.padding,
           padding: 20,
-          height: SIZES.height - 1000,
-          maxHeight: SIZES.height - 420,
           borderRadius: SIZES.radius,
           backgroundColor: 'white',
           ...SHADOWS.shadow1,
+          ...outerStyles
         }}>
           <Text style={{...FONTS.h2, color: color || COLORS.primary, fontWeight: 'bold' }}> {label || 'Select a list'} </Text>
           <FlatList
               contentContainerStyle={{
                 marginTop: SIZES.radius
               }}
+              scrollEnabled={false}
               keyExtractor={(item, index) => `${index}-${item.uid}`}
               data={tasks}
               ItemSeparatorComponent={separator}
@@ -117,11 +117,12 @@ type TaskGroupProps = {
   onPress: () => {},
   label: string,
   color: string,
-  tasks: any[]
+  tasks: any[],
+  style: StyleSheetProperties
 }
 
 type SlideProps = {
   item: Task,
   color: string,
-  index: number
+  index: number,
 }

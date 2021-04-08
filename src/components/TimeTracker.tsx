@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Duration, Interval, DateTime, DurationObject } from "luxon";
+import { InteractionManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Duration, Interval, DateTime } from "luxon";
 import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"
 import { Task } from '../utils/data';
 
-export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped, onTick } : TimeTrackerProps) {
+export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped, onTick, config } : TimeTrackerProps) {
     const [track, setTrack] = useState<TimeTrack>({
         uid: undefined,
         task_uid: undefined,
@@ -56,19 +56,29 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
                 text: "Take a short break",
             },
         },
+        tickTime: 100,
         now: null,
         mode: "promodoro",
         volume: 100,
         timer: null,
-        pushSubscription: null,
         durationTarget: null,
     });
 
+    
     useEffect(() => {
         if (task && task.uid) {
             setTrack({...track, task_uid: task.uid })
         }
-    }, [task])
+        setState({ ...state, ...config})
+    }, [])
+
+    useEffect(() => {
+        if (track.started_at) {
+            const timer = setInterval(() => {
+                setState({ ...state, now: new Date(Date.now()), timer: state.timer || timer })
+            }, state.tickTime);
+        }
+    }, [track.started_at])
 
     // ui
     const trackerIcon = () => state.now ? 'stop': 'play';
@@ -93,7 +103,7 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
             onTick(null);
             setTargetTime(null)
         }
-    }, [track.started_at, state.now, state.durationTarget]);
+    }, []);
       
     const [currentTime, setCurrentTime] = useState(state.durationTarget ? state.durationTarget.toFormat("mm:ss") : "00:00");
     const updateCurrentTime = (timeString: string) => {
@@ -102,28 +112,33 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
             onTick(track.currentTime)
         }
     }
+
     useEffect(() => {
-        if (track.started_at && state.now && state.durationTarget) {
-            let duration = Interval.fromDateTimes(track.started_at, state.now).toDuration()
+        if (track.started_at && state.now ) {
+            let duration: Duration | null = Interval.fromDateTimes(track.started_at, state.now).toDuration()
             track.currentTime = duration;
-            if (duration) {
-                duration = state.durationTarget.minus(duration).plus({ seconds: 0.9 });
-                updateCurrentTime(duration.as("seconds") < 0 ? "00:00" : duration.toFormat("mm:ss"));
+            if (duration && state.durationTarget) {
+                duration =  state.durationTarget.minus(duration).plus({ seconds: 0.9 });
+                if (duration) {
+                    updateCurrentTime(duration.as("seconds") < 0 ? "00:00" : duration.toFormat("mm:ss"));
+                }
             } else {
                 updateCurrentTime("00:00");
             }
         } else {
-            updateCurrentTime(state.durationTarget.toFormat("mm:ss"));
+            if (state.durationTarget) {
+                updateCurrentTime(state.durationTarget.toFormat("mm:ss"));
+            }
         }
-    }, [track.started_at, state.now, state.durationTarget]);
+    }, [track.started_at, state.now]);
       
       
     useEffect(() => {
-        if (targetTime && state.now && targetTime.diffNow() < 0) {
-            setState({...state, completed: true });
+        if (targetTime && state.now && targetTime.diffNow().as('seconds') < 0) {
+            setTrack({...track, completed: true });
             stop();
         }
-    }, [targetTime, state.now ]);
+    }, [targetTime, state.now]);
       
     // state
     const clearTrack = () => {
@@ -147,16 +162,13 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
     };
     
     const play = () => {    
-        const startDate = new Date()
+        const startDate = new Date(Date.now())
         setTrack({...track, started_at: startDate});
         setState({...state, now: startDate });
-        const timer = setInterval(() => {
-            setState({ ...state, now: new Date(), timer: timer })
-        }, 100);
     };
     
-    const stop = (shouldCallNextMode = true, silent = false) => {
-        setTrack({...track, ended_at: new Date() });
+    const stop = (shouldCallNextMode: boolean|null = true, silent: boolean|null = false) => {
+        setTrack({...track, ended_at: new Date(Date.now()) });
     
         const wasRunning = Boolean(state.now);
         const previousMode = state.mode;
@@ -183,23 +195,25 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStoped,
     return (
         <View style={styles.entityContainer}>
                 <View style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
-                    <Text style={styles.clockText}>
+                    <Text style={styles.clockText} testID='txtTime'>
                         {currentTime}
                     </Text> 
                 </View>
-                <Pressable style={{ 
-                        flex: 1,
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        justifyContent: "center",
-                        alignItems: 'center',
-                        flexDirection: "row", 
-                        borderRadius: SIZES.radius + 2,
-                        maxHeight: 40,
-                        minHeight: 40,
-                        padding: 10,
-                        width: 100
+                <Pressable 
+                    testID='btnPlay'
+                    style={{ 
+                            flex: 1,
+                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                            justifyContent: "center",
+                            alignItems: 'center',
+                            flexDirection: "row", 
+                            borderRadius: SIZES.radius + 2,
+                            maxHeight: 40,
+                            minHeight: 40,
+                            padding: 10,
+                            width: 100
                     }}
-                    onPress={toggleTracker}
+                    onPress={() => toggleTracker()}
                 >
                     <FontAwesome5 name={trackerIcon()} color="white" style={{ marginRight: 5 }}></FontAwesome5>
                     <Text style={styles.entityTitle}>
@@ -255,6 +269,7 @@ type TimeTrackerProps = {
     onPomodoroStoped: (data: any) => {},
     onTick: (data: any) => {},
     task: Task,
+    config: TimeTrackerConfig
 }
 
 type TimeTrack = {
@@ -266,7 +281,7 @@ type TimeTrack = {
     duration: string | null,
     target_time: string| null,
     completed: boolean,
-    currentTime: DurationObject | null
+    currentTime: Duration| null
 }
 
 type TimeTrackerState = {
@@ -278,7 +293,8 @@ type TimeTrackerState = {
     volume: number,
     timer: null | NodeJS.Timeout,
     pushSubscription: null,
-    durationTarget: null | DurationObject,
+    durationTarget: null | Duration,
+    tickTime: number
 }
 
 type TimeTrackerModes = {
@@ -294,4 +310,8 @@ type TimeTrackerMode = {
     color: string,
     colorBg: string,
     colorBorder: string,
+}
+
+type TimeTrackerConfig = {
+    tickTime: number
 }

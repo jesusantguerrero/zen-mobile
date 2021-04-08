@@ -15,6 +15,10 @@
       "resizeMode": "contain",
       "size": 24
     },
+    "androidStatusBar": {
+      "translucent": true,
+      "backgroundColor": "#00000088"
+    },
     "android": {
       "userInterfaceStyle": "light",
       "package": "com.insanecode.zen",

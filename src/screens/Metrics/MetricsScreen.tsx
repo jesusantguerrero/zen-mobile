@@ -5,6 +5,8 @@ import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
 import AuthContext from '../../utils/AuthContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function MetricsScreen({ navigation }) {
   const [mode, setMode] = useState('zen');
@@ -69,15 +71,16 @@ export default function MetricsScreen({ navigation }) {
           position: 'relative'
         }}
       >
-        <ImageBackground source={images.zenTemple} style={styles.containerHeader}>
-          <View style={{
+        <ImageBackground source={images.temple} style={styles.containerHeader}>
+        <LinearGradient
+          colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)' ]}
+          locations={[0, 0.5]}
+          style={{
             width: '100%', 
-            height: '100%', 
-            backgroundColor:'#000', 
-            opacity: .6, 
-            marginBottom: 15, 
+            height: '100%',
             position: 'absolute'
-          }} />
+          }}
+        />
         </ImageBackground>
         <AppHeader navigation={navigation} user={extraData}></AppHeader>
           <View style={{
@@ -127,21 +130,53 @@ export default function MetricsScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <MatrixHeader></MatrixHeader>
+      <Text style={{ color: 'white', padding: SIZES.padding, paddingBottom: 0 }}> Guilds </Text>
       <View style={{
-          marginTop: 100,
-          paddingBottom: 30,
+          padding: SIZES.padding,
       }}>
-        <TaskGroup
-          label={selectedMatrix.label}
-          tasks={selectedList}
-          color={selectedMatrix.color}
-          onPress={() => console.log('hola')}
-        >
-        </TaskGroup>
+        <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignContent: 'space-around',
+                backgroundColor: 'white',
+                overflow: 'hidden',
+                borderRadius: SIZES.radius,
+                marginTop: 8
+              }}
+            >
+          {Object.entries(matrix).map(([listName, list]) => {
+            return (
+              <TouchableOpacity style={{
+                width: '33%',
+                height: 74,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              key={listName}
+              onPress={() => selectMatrix(listName)}
+              >
+                <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
+              </TouchableOpacity>
+            )
+          })}
+
+        </View>
       </View>
-    </View>
+      <Text style={{ color: 'white', paddingHorizontal: SIZES.padding }}> Stats </Text>
+      <TaskGroup
+        label={selectedMatrix.label}
+        tasks={selectedList}
+        color={selectedMatrix.color}
+        style={{ marginBottom: 100 }}
+        onPress={() => console.log('hola')}
+      >
+      </TaskGroup>
+    </ScrollView>
   );
 }
 
@@ -156,11 +191,12 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     overflow: 'hidden',
-     ...SHADOWS.shadow1
+     ...SHADOWS.shadow1,
+     marginBottom: 200
   },
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary
   },
 });

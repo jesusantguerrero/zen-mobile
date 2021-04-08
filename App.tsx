@@ -1,21 +1,26 @@
 import "react-native-gesture-handler"
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, StatusBarStyle, StatusBar} from 'react-native';
+import { StatusBar } from "expo-status-bar"
+import { AppearanceProvider } from 'react-native-appearance';
 import { NavigationContainer } from "@react-navigation/native";
 import { decode, encode } from "base-64";
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 import { firebase } from "./src/utils/useFirebase";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import HomeNavigator from "./src/navigators/home";
 import AuthNavigator from "./src/navigators/auth";
 import {useFonts, Roboto_400Regular, Roboto_900Black, Roboto_700Bold } from "@expo-google-fonts/roboto"
 import AuthContext from "./src/utils/AuthContext";
+import { ImageBackground, LogBox, Platform } from "react-native";
+import { COLORS, images } from "./src/config/constants";
 
 export default function App() {
   const [isLoading, setIsLoading ] = useState(true);
-  const [user, setUser] = useState(null); 
-  // LogBox.ignoreLogs(['Setting a timer']);
+  const [user, setUser] = useState<firebase.User|null>(null); 
+  if (Platform.OS == 'android') {
+    LogBox.ignoreLogs(['Setting a timer']);
+  }  
   let [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_900Black,
@@ -33,7 +38,8 @@ export default function App() {
         setIsLoading(false)
       }
     })
-  })
+  }, [])
+
 
   if (!fontsLoaded || isLoading) {	
     return (	
@@ -43,54 +49,27 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar
-        animated={true}
-        translucent={false}
-        backgroundColor='rgba(255,255,255,1)'
-        barStyle='dark-content'
+      <SafeAreaView style={{ flex: 1}}>
+      <ImageBackground
+        source={images.temple}
+        style={{
+          width: '100%', 
+          height: '100%',
+          position: 'absolute'
+        }}
       />
+        <StatusBar
+          animated={true}
+          translucent={true}
+          backgroundColor='#00000088'
+          style='dark'
+        />
         <AuthContext.Provider value={{ extraData: user }}>
-          <NavigationContainer>
-              { user ? <HomeNavigator></HomeNavigator> : <AuthNavigator></AuthNavigator>}
-          </NavigationContainer>
+            <NavigationContainer>
+                { user ? <HomeNavigator></HomeNavigator> : <AuthNavigator></AuthNavigator>}
+            </NavigationContainer>
         </AuthContext.Provider>
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    height: 20,
-    width: "100%"
-  },
-  button: {
-    width: 100,
-    minWidth: "48%",
-    color: "white",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    fontSize: 36
-  },
-  header: {
-    backgroundColor: "red",
-    borderBottomColor: "#333",
-    borderBottomWidth: 2,
-    height: 40,
-    fontSize: 24,
-    width: "100%"
-  }
-});
