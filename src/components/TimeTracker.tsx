@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { InteractionManager, Pressable, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Duration, Interval, DateTime } from "luxon";
 import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"

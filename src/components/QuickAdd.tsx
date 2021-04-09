@@ -69,6 +69,12 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         if (typeof formData.due_date != 'string' && isDate(formData.due_date)) {
             formData.due_date = format(formData.due_date, "yyyy-MM-dd");
         }
+
+        if (!task.title) {
+          alert('Add a title');
+          return
+        }
+
         saveTaskToDb(formData).then(() => {
             clearForm()
             onSave(formData)

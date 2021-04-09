@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createBottomTabNavigator,BottomTabBar, BottomTabBarProps, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { BlurView } from 'expo-blur';
 import {  ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../screens";
@@ -6,11 +6,25 @@ import TabBarIcon from "../components/TabBarIcon";
 import TabBarIconSpecial from "../components/TabBarIconSpecial";
 import QuickAdd from "../components/QuickAdd";
 import AuthContext from '../utils/AuthContext';
+import { BackHandler } from 'react-native';
 const Tab = createBottomTabNavigator<MainStackParamList>();
 
 export default function MainStackScreen() {
     const [showQuickTask, setShowQuickTask] = useState(false);
     const { extraData } = useContext(AuthContext);
+
+    useEffect(() => {
+      const backAction = () => {
+        console.log('here we are')
+        if (showQuickTask) {
+          setShowQuickTask(false)
+        }
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+      return () => backHandler.remove();
+    }, []);
 
     return (
         <Tab.Navigator
