@@ -2724,6 +2724,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-11.2.0.tgz#84ba11f0ef181d13a4b8daa110c9fbcc7d68eea4"
   integrity sha512-lySvD0UrhQ+ERTp+ZViGPNWfKRLBZAfdK5RgdudbKyUqxiGS0Wx0lI6XMh0A7yT7yMKbhE2cSWAoJPYsEGG9mg==
 
+"@react-native-picker/picker@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-1.14.0.tgz#9c3ce0be162239a7a05b994f2bdcf5660b5466b9"
+  integrity sha512-KN/nOSxO64LxYms/8RpdjdIqemqDlxM8glDi4upg40/3JqalmXoHHBQxA0XYdAoL+padSVHAoAS6Ie5zAn8gTw==
+
 "@react-navigation/bottom-tabs@^5.11.8":
   version "5.11.8"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-5.11.8.tgz#0af8d5859b1ad781bdd86e8236ceaed60dc355fe"

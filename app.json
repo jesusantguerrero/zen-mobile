@@ -26,9 +26,12 @@
       "config": {
         "googleSignIn": {
           "certificateHash": "3E71E56E4332BE8100F3B53E87F76A687F3AD5D1",
-          "apiKey" : "AIzaSyCeKppEt-dAIZlh-Z76nb8yD4UQfogouuw"
+          "apiKey": "AIzaSyCeKppEt-dAIZlh-Z76nb8yD4UQfogouuw"
         }
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.insanecode.zen"
     }
   }
 }

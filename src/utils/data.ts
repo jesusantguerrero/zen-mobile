@@ -14,3 +14,11 @@ export type Task = {
     commit_date: string | null,
     matrix: 'todo'|'schedule'|'delegate'|'delete'|'backlog',
 }
+
+export type AppSelectorProps = {
+    data: any,
+    value: string,
+    onChange: Function 
+    isVisible: boolean,
+    onClose: boolean | Function
+} 

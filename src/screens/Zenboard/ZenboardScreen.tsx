@@ -13,6 +13,7 @@ import firebase from 'firebase';
 import { Task } from '../../utils/data';
 import { ZenboardScreenProps } from "../../navigators/main"
 import { Interval } from 'luxon';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   const { extraData } = useContext(AuthContext);
@@ -136,47 +137,50 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
           position: 'absolute'
         }}
       />
-      <AppHeader navigation={navigation} user={extraData}></AppHeader>
-      <View style={{width: '100%', paddingHorizontal: SIZES.padding, paddingBottom: SIZES.padding }}>
-        <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { extraData?.displayName || extraData?.email }</Text>
-      </View>
-      <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
-        <TimeTracker 
-          task={currentTask} 
-          onPomodoroStarted={saveLocalTrack} 
-          onPomodoroStopped={saveLocalTrack} 
-          onTick={setTracker}
-        />
-      </View>
-      <View style={{ 
-          marginBottom: 10, 
-          justifyContent: 'space-between', 
-          flexDirection: 'row', 
-          width: '100%',
-          paddingHorizontal: SIZES.padding
-          
-        }}>
-        <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup: Todo' : 'Focused'} </Text>
-        <TouchableOpacity
-          onPress={() => setShowLineUp(!showLineUp)}
-        >
-          <Text style={{ ...FONTS.h3, color: COLORS.green[400] }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
-        </TouchableOpacity>
-      </View>
-      {!showLineUp && currentTask ? 
-        <Animated.View style={{
-          width: '100%', 
-          paddingVertical: SIZES.padding,
-          paddingHorizontal: viewPadding
-        }}>
-          <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
-        </Animated.View>
-        : 
-        <TodoScroll
-          items={todo} 
-          onPress={setMainTask}
-        />      
-      }
+      <ScrollView style={{ width: '100%'}}>
+        <AppHeader navigation={navigation} user={extraData}></AppHeader>
+        <View style={{width: '100%', paddingHorizontal: SIZES.padding, paddingBottom: SIZES.padding }}>
+          <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { extraData?.displayName || extraData?.email }</Text>
+        </View>
+        <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
+          <TimeTracker 
+            task={currentTask} 
+            onPomodoroStarted={saveLocalTrack} 
+            onPomodoroStopped={saveLocalTrack} 
+            onTick={setTracker}
+          />
+        </View>
+        <View style={{ 
+            marginBottom: 10, 
+            justifyContent: 'space-between', 
+            flexDirection: 'row', 
+            width: '100%',
+            paddingHorizontal: SIZES.padding
+            
+          }}>
+          <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup: Todo' : 'Focused'} </Text>
+          <TouchableOpacity
+            onPress={() => setShowLineUp(!showLineUp)}
+          >
+            <Text style={{ ...FONTS.h3, color: COLORS.green[400] }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
+          </TouchableOpacity>
+        </View>
+        {!showLineUp && currentTask ? 
+          <Animated.View style={{
+            width: '100%', 
+            paddingVertical: SIZES.padding,
+            paddingHorizontal: viewPadding
+          }}>
+            <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
+          </Animated.View>
+          : 
+          <TodoScroll
+            items={todo} 
+            onPress={setMainTask}
+          />      
+        }
+
+      </ScrollView>
     </ImageBackground>
   );
 }

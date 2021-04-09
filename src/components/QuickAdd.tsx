@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { TextInput, View, TouchableOpacity, Text, Animated, Easing } from "react-native"
+import { TextInput, View, TouchableOpacity, Text, Animated, Easing, Platform } from "react-native"
 import { FontAwesome5 } from "@expo/vector-icons"
 import { COLORS, SIZES } from "../config/constants";
 import { useState } from "react";
@@ -9,17 +9,11 @@ import firebase from "firebase";
 import { Task } from "../utils/data";
 import { isDate } from "date-fns/esm";
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import ModalSelector from 'react-native-modal-selector'
+import AppSelector from "./AppSelector";
 
 
-const MatrixSelector = ({ value, placeholder} : { value: string, placeholder: string }) => {
-  return (
-    <TouchableOpacity style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', marginBottom: 10 }}>
-      <FontAwesome5 color='white' name='list'  size={16}></FontAwesome5>
-      <Text style={{ color: 'white', marginLeft: 5, textTransform: 'capitalize' }}> { value || placeholder }</Text>
-    </TouchableOpacity>
-  )
-}
+
+
 
 export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
     const [task, setTask] = useState<Task>({
@@ -117,16 +111,20 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         borderTopRightRadius: 14 
     }}>
       <View >
-        {/* <ModalSelector
-            data={matrix}
-            visible={showMatrix}  
-            onChange={(option)=> setTask({...task, matrix: option.key })}
-            onModalClose={() => setShowMatrix(false)}>
-              <MatrixSelector value={task.matrix} placeholder="Set Quadrant">  </MatrixSelector>
-        </ModalSelector> */}
+        <AppSelector
+          testID="pckMatrix"
+          value={task.matrix}
+          data={matrix}
+          onClose={() => {setShowMatrix(false)}}
+          onChange={(value: "todo" | "schedule" | "delegate" | "delete" | "backlog") =>
+            setTask({...task, matrix: value})
+          } 
+        >
+        </AppSelector>
         <TextInput 
             placeholder="Add quick task" 
-            style={{ color: 'white' }} 
+            style={{ color: 'white' }}
+            placeholderTextColor='white' 
             onChangeText={(text) => setTask((oldTask) => {return {...oldTask, title: text }})}
 
         >

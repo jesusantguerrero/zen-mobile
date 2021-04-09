@@ -1,10 +1,7 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Pressable, Animated, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../config/constants';
-import ScrollDots from "./ScrollDots";
-const SLIDER_WIDTH = Dimensions.get('window').width + 80
-const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7)
 const { width: windowWidth } = Dimensions.get("window");
 
 const Slide = ({ item, index, onPress }) => {    
@@ -20,6 +17,7 @@ const Slide = ({ item, index, onPress }) => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   paddingHorizontal: SIZES.padding,
+                  paddingTop: SIZES.padding - 10
                 }}
               >
                 <View style={{
@@ -39,7 +37,7 @@ const Slide = ({ item, index, onPress }) => {
                         alignItems: 'center',
                         marginRight: 4
                       }}>
-                      <FontAwesome5 color='white' name='sticky-note' ></FontAwesome5>
+                      <FontAwesome5 color='white' name='sticky-note-alt' ></FontAwesome5>
                     </View>
                     <Text style={{ ...styles.header, color: 'white'}}>{item.title}</Text>
                   </View>
@@ -83,27 +81,26 @@ export default function TodoScroll({ items, onPress }) {
     const scrollX = new Animated.Value(0);
 
     return (
-        <View style={{ height: 100, flex: 1,  width: '100%' }}>
+        <View style={{ flex: 1,  width: '100%', marginBottom: 100 }}>
           <Animated.FlatList
               data={items}
               style={{ 
                 flex: 1, 
                 width: '100%',
                 marginTop: SIZES.padding,
-                maxHeight: 155
+                // maxHeight: 155
               }}
-              renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
-              pagingEnabled
-              horizontal
+              scrollEnabled={false}
               keyExtractor={(item, index) => `item-scroll-${item.uid}-${index}`}
+              renderItem={props => <Slide {...props} onPress={onPress}></Slide>}
               showsHorizontalScrollIndicator={false}
-              onScroll={Animated.event([
-                { nativeEvent: { 
-                  contentOffset: { x: scrollX } 
-                } }
-              ], { useNativeDriver: false })}
+              // onScroll={Animated.event([
+              //   { nativeEvent: { 
+              //     contentOffset: { x: scrollX } 
+              //   } }
+              // ], { useNativeDriver: false })}
           />
-          <ScrollDots position={scrollX} items={items}></ScrollDots>
+          {/* <ScrollDots position={scrollX} items={items}></ScrollDots> */}
         </View>
     );
 }

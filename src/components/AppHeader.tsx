@@ -19,7 +19,7 @@ export default function AppHeader({ user } : AppHeaderProps) {
             const name = provider.displayName || provider.email || user.email;
         
             setProfileData({
-              photo:  provider.photoURL,
+              photo:  provider.photoURL || 'https://reactnative.dev/img/tiny_logo.png',
               name: name,
               initials: name && name.split(' ').map( (name: string) => name[0].toUpperCase()).join('')
             })
@@ -48,7 +48,7 @@ export default function AppHeader({ user } : AppHeaderProps) {
             overflow: 'hidden'
           }}
         > 
-           { profileData.photo ? <Image source={profileData.photo} style={{ width: "100%", height: "100%", borderRadius: 35 }}/>:
+           { profileData.photo ? <Image source={{uri: profileData.photo }} style={{ width: "100%", height: "100%", borderRadius: 35 }}/>:
           <FontAwesome5  name="user" size={14} color="black"></FontAwesome5>}
         </TouchableOpacity>
       </View>)

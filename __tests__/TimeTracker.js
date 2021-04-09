@@ -21,10 +21,10 @@ const task = {
   matrix: "todo",
 };
 
-it('Play and stop correctly',async () => {
+it('Play and stop pomodoro correctly',async () => {
     jest.useFakeTimers()
     advanceBy(-2000);
-    const { getByTestId } =  render(<TimeTracker task={task} onTick={() => {}} onPomodoroStarted={() => { }} onPomodoroStoped={() => {stoped}} config={100}/>);
+    const { getByTestId } =  render(<TimeTracker task={task} onTick={() => {}} onPomodoroStarted={() => { }} onPomodoroStopped={() => {}} config={2000}/>);
     const btnPlay = getByTestId('btnPlay');
     let time = ""
     await act(async () => {
@@ -34,7 +34,7 @@ it('Play and stop correctly',async () => {
       jest.advanceTimersByTime(2000)
       time = getByTestId('txtTime').children[0]
       fireEvent.press(btnPlay)
-      })
+    })
     expect(time).toBe('24:58')
     expect(getByTestId('txtTime').children[0]).toBe('25:00')
 })

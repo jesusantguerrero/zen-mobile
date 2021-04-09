@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { InteractionManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { InteractionManager, Pressable, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Duration, Interval, DateTime } from "luxon";
 import { FONTS, COLORS, SIZES } from "../config/constants";
 import { FontAwesome5 } from "@expo/vector-icons"
@@ -216,17 +216,19 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
     };
 
     return (
-        <View style={styles.entityContainer}>
-                <View style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
+        <TouchableOpacity style={styles.entityContainer}   
+            testID='btnPlay'
+            onPress={() => toggleTracker()}
+        >
+                <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
                     <Text style={styles.clockText} testID='txtTime'>
                         {currentTime}
                     </Text> 
                 </View>
-                <Pressable 
+                <View 
                     testID='btnPlay'
                     style={{ 
                             flex: 1,
-                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
                             justifyContent: "center",
                             alignItems: 'center',
                             flexDirection: "row", 
@@ -236,21 +238,17 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
                             padding: 10,
                             width: 100
                     }}
-                    onPress={() => toggleTracker()}
+                  
                 >
-                    <FontAwesome5 name={trackerIcon()} color="white" style={{ marginRight: 5 }}></FontAwesome5>
-                    <Text style={styles.entityTitle}>
-                        { trackerText() }
-                    </Text>
-            </Pressable>
-        </View>
+                    <FontAwesome5 name={trackerIcon()} color="white" size={30}></FontAwesome5>
+            </View>
+        </TouchableOpacity>
     )
 }
 
 
 const styles = StyleSheet.create({
     entityContainer: {
-        flex: 1,
         marginTop: 16,
         width: "100%",
         textAlign: "center",
@@ -265,7 +263,8 @@ const styles = StyleSheet.create({
         height: 200,
         padding: SIZES.padding,
         borderColor: 'white',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
     },
     entityTitle: {
         fontSize: 14,

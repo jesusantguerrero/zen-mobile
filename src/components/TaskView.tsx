@@ -27,35 +27,10 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
     }
 
     useEffect(() => {
-        console.log(tracker)
-        if (task && !tracker && task.tracks.length) {
-            const savedTime = timeReducer(task.tracks)
-            const activeTimer = getActiveTimer(tracker);
-            setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
-
-            onUpdateTimeTask({
-                uid: task.uid,
-                duration_ms: timeTracked,
-                duration: savedTime
-            })
-            console.log("Time updated", task.tracks)
-        }
-    }, [tracker])
-
-    useEffect(() => {
         if (task) {
             const savedTime = timeReducer(task.tracks)
             const activeTimer = getActiveTimer(tracker);
             setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
-
-            if (!tracker && task.duration !== savedTime) { 
-                onUpdateTimeTask({
-                    uid: task.uid,
-                    duration_ms: timeTracked,
-                    duration: savedTime
-                })
-                console.log("Time updated")
-            }
         }
     }, [tracker, task])
 

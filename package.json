@@ -6,6 +6,8 @@
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest",
+    "build:android": "expo build:android ./",
+    "build:ios": "expo build:ios ./",
     "storybook": "start-storybook -p 7007",
     "build-storybook": "build-storybook"
   },
@@ -15,6 +17,7 @@
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-firebase/app": "^11.2.0",
     "@react-native-firebase/auth": "^11.2.0",
+    "@react-native-picker/picker": "^1.14.0",
     "@react-navigation/bottom-tabs": "^5.11.8",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
