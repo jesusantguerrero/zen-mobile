@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
+import AppHeader from '../../components/AppHeader';
+import TaskGroup from '../../components/TaskGroup';
+import AuthContext from '../../utils/AuthContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView } from 'react-native-gesture-handler';
 
-export default function ZenboardScreen({ navigation, extraData }) {
-  const [mode, setMode] = useState('zen');
+export default function StandupScreen({ navigation }) {
+  const { extraData } = useContext(AuthContext);
 
-  const [ todo, setTodo ] = useState([])
-  const { getTaskByMatrix } = useTaskFirestore(extraData)
+  const [ todo, setTodo ] = useState([]);
+  const [ selectedList, setSelectedList] = useState([]);
+  const [ selectedMatrix, setSelectedMatrix] = useState({});
+  const { getTaskByMatrix } = useTaskFirestore(extraData);
 
   
   const getMatrix = (matrix: string, callback) => {
@@ -23,52 +31,162 @@ export default function ZenboardScreen({ navigation, extraData }) {
     });
   };
 
+  const [matrix, setMatrix] = useState({
+    todo: {
+      label: 'Todo',
+      color: COLORS.green[400],
+      list: todo
+    },
+    schedule: {
+      label: 'Schedule',
+      color: COLORS.blue[400],
+      list: todo
+    },
+    delegate: {
+      label: 'Delegate',
+      color: COLORS.yellow[400],
+      list: todo
+    },
+  })
+
   useEffect(() => { 
       const todoRef = getMatrix("todo", setTodo);
   }, [])
 
+  const selectMatrix = (matrixName: string) => {
+    const selectedMatrix = matrix[matrixName];
+    if (selectedMatrix) {
+      setSelectedList(todo)
+      setSelectedMatrix(selectedMatrix)
+    }
+  }
+
+  const MatrixHeader = () => {
+    return (
+      <View
+        style={{
+          width: "100%",
+          height: 210,
+          position: 'relative'
+        }}
+      >
+        <ImageBackground source={images.temple} style={styles.containerHeader}>
+        <LinearGradient
+          colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)' ]}
+          locations={[0, 0.5]}
+          style={{
+            width: '100%', 
+            height: '100%',
+            position: 'absolute'
+          }}
+        />
+        </ImageBackground>
+        <AppHeader navigation={navigation} user={extraData}></AppHeader>
+          <View style={{
+            marginTop: 84,
+            width: '100%',
+            paddingHorizontal: SIZES.padding,
+            position: 'absolute',
+            elevation: 9,
+            zIndex: 10,
+            ...SHADOWS.shadow1
+          }}>
+            <Text style={{ color: 'white'}}> Metrics </Text>
+            <View
+              style={{
+                flex: 2,
+                flexDirection: 'row',
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignContent: 'space-around',
+                backgroundColor: 'white',
+                overflow: 'hidden',
+                borderRadius: SIZES.radius,
+                marginTop: 8
+              }}
+            >
+              {Object.entries(matrix).map(([listName, list]) => {
+                return (
+                  <TouchableOpacity style={{
+                    width: '33%',
+                    height: 74,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  key={listName}
+                  onPress={() => selectMatrix(listName)}
+                  >
+                    <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
+                  </TouchableOpacity>
+                )
+              })}
+
+            </View>
+          </View>
+      </View>
+    )
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 5, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ borderRadius: 100, backgroundColor: "red", width: 50, height: 50, justifyContent: "center", alignItems: "center", marginTop: 30 }}>
-            <Text style={{ color: "white" }}> { mode } </Text>
+    <ScrollView style={styles.container}>
+      <MatrixHeader></MatrixHeader>
+      <Text style={{ color: 'white', padding: SIZES.padding, paddingBottom: 0 }}> Guilds </Text>
+      <View style={{
+          padding: SIZES.padding,
+      }}>
+        <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignContent: 'space-around',
+                backgroundColor: 'white',
+                overflow: 'hidden',
+                borderRadius: SIZES.radius,
+                marginTop: 8
+              }}
+            >
+          {Object.entries(matrix).map(([listName, list]) => {
+            return (
+              <TouchableOpacity style={{
+                width: '33%',
+                height: 74,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              key={listName}
+              onPress={() => selectMatrix(listName)}
+              >
+                <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
+              </TouchableOpacity>
+            )
+          })}
+
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  containerHeader: {
     flex: 1,
     flexDirection: "column",
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
+     ...SHADOWS.shadow1,
+     marginBottom: 200
   },
-  footer: {
+  container: {
     flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    height: 20,
-    width: "100%"
+    flexDirection: "column",
+    backgroundColor: COLORS.primary
   },
-  button: {
-    width: 100,
-    minWidth: "48%",
-    color: "white",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    fontSize: 36
-  },
-  header: {
-    backgroundColor: "red",
-    borderBottomColor: "#333",
-    borderBottomWidth: 2,
-    height: 40,
-    fontSize: 24,
-    width: "100%"
-  }
 });

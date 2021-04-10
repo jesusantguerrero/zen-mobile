@@ -5,7 +5,7 @@ import { FontAwesome5 } from "@expo/vector-icons"
 
 const MatrixSelector = ({ value, placeholder} : { value: string, placeholder: string }) => {
     return (
-      <TouchableOpacity style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', marginBottom: 10 }}>
+      <TouchableOpacity style={{ paddingLeft: 5, paddingRight: 5, flexDirection: 'row', alignItems: 'center' }}>
         <FontAwesome5 color='white' name='list'  size={16}></FontAwesome5>
         <Text style={{ color: 'white', marginLeft: 5, textTransform: 'capitalize' }}> { value || placeholder }</Text>
       </TouchableOpacity>
@@ -16,10 +16,11 @@ export default function AppSelector({ data, value, onChange, isVisible, onClose 
  return (
     <ModalSelector
         data={data}
-        visible={isVisible}  
+        visible={isVisible}
         onChange={(option)=> onChange(option.key)}
-        onModalClose={() => onClose && onClose()}>
-        <MatrixSelector value={value} placeholder="Set Quadrant">  </MatrixSelector>
+        onModalClose={() => onClose && onClose()}
+        >
+          <MatrixSelector value={value} placeholder="Set Quadrant">  </MatrixSelector>
     </ModalSelector>)   
 }
 

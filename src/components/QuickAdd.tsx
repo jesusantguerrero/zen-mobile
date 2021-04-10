@@ -11,10 +11,6 @@ import { isDate } from "date-fns/esm";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AppSelector from "./AppSelector";
 
-
-
-
-
 export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
     const [task, setTask] = useState<Task>({
         uid: null,
@@ -120,6 +116,7 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
         <AppSelector
           testID="pckMatrix"
           value={task.matrix}
+          isVisible={showMatrix}
           data={matrix}
           onClose={() => {setShowMatrix(false)}}
           onChange={(value: "todo" | "schedule" | "delegate" | "delete" | "backlog") =>

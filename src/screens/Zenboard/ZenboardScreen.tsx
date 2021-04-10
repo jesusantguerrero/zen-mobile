@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity } f
 import TodoScroll from "../../components/ScrollCards";
 import TaskView from "../../components/TaskView";
 import TimeTracker, { TimeTrack } from "../../components/TimeTracker";
+import ScrollCard from "../../components/ScrollCard";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { images, SIZES, FONTS, COLORS } from "../../config/constants";
@@ -14,13 +15,23 @@ import { Task } from '../../utils/data';
 import { ZenboardScreenProps } from "../../navigators/main"
 import { Interval } from 'luxon';
 import { ScrollView } from 'react-native-gesture-handler';
+import { format } from 'date-fns';
+import AppSelector from "../../components/AppSelector";
+
+const quadrants = [
+  {key: 'todo', label: 'Todo'}, 
+  {key: 'schedule', label: 'Schedule'}, 
+];
 
 export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   const { extraData } = useContext(AuthContext);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [currentTrack, setCurrentTrack] = useState<TimeTrack | null>(null);
   const [showLineUp, setShowLineUp] = useState(false);
+  const [ matrix, setMatrix ] = useState('schedule')
+  const [ showMatrix, setShowMatrix ] = useState(false)
   const [ todo, setTodo ] = useState([])
+  const [ schedule, setSchedule ] = useState([])
   const { getTaskByMatrix, mapTask, updateTask } = useTaskFirestore()
   //  Line up list
   const getMatrix = (matrix: string, callback: Function): null|Function => {
@@ -34,7 +45,9 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
               const data = doc.data();
               return results.push(mapTask(data, doc.id));
             });
-            setMainTask(results[0])
+            if (matrix == 'todo') {
+              setMainTask(results[0])
+            }
             callback(results)
           });
         });
@@ -43,10 +56,13 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   };
 
   useEffect(() => { 
-      const unsubscribe = getMatrix("todo", setTodo);
+      const unsubscribeTodo = getMatrix("todo", setTodo);
+      const unsubscribeSchedule = getMatrix("schedule", setSchedule);
+      
       return () => {
-        if (unsubscribe) {
-          unsubscribe();
+        if (unsubscribeTodo && unsubscribeSchedule) {
+          unsubscribeTodo();
+          unsubscribeSchedule();
         }
       }
   }, [])
@@ -158,7 +174,22 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
             paddingHorizontal: SIZES.padding
             
           }}>
-          <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup: Todo' : 'Focused'} </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup:' : 'Focused'} </Text>
+              { showLineUp && 
+                <AppSelector
+                    testID="pckMatrix"
+                    value={matrix}
+                    data={quadrants}
+                    onClose={() => {setShowMatrix(false)}}
+                    onChange={(value: "todo" | "schedule") =>
+                      setMatrix(value)
+                    } 
+                >
+                </AppSelector>
+              }
+            </View>
+
           <TouchableOpacity
             onPress={() => setShowLineUp(!showLineUp)}
           >
@@ -169,13 +200,45 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
           <Animated.View style={{
             width: '100%', 
             paddingVertical: SIZES.padding,
-            paddingHorizontal: viewPadding
           }}>
-            <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
+            <ScrollCard index={1} item={currentTask} 
+              onRemove={() => {
+
+              }}
+              onDone={async (task: Task) => {
+                if (tracker) {
+                  alert("Stop timer first to mark as done")
+                  return 
+                }
+              
+                  const unresolvedItems = task.checklist.filter(item => !item.done)
+                  let canSave = true;
+                  if (unresolvedItems.length) {
+                    canSave = await confirm(`There are ${unresolvedItems.length} unresolved item(s)`)
+                    canSave && unresolvedItems.forEach(item => item.done = true);
+                  }
+                  
+                  if (!canSave) return
+                
+                  task.commit_date = format(new Date(), 'yyyy-MM-dd');
+                  task.done = true;
+                  updateTask(task).then(() => {
+                    if (todo.length) {
+                      setCurrentTask(todo[0]);
+                    } else {
+                      setCurrentTask(null);
+                    }
+                  })
+
+              }}
+              >
+              <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
+            </ScrollCard>
+            
           </Animated.View>
           : 
           <TodoScroll
-            items={todo} 
+            items={matrix == 'todo' ? todo : schedule} 
             onPress={setMainTask}
           />      
         }

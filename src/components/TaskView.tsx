@@ -27,7 +27,7 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
     }
 
     useEffect(() => {
-        if (task) {
+        if (task && tracker) {
             const savedTime = timeReducer(task.tracks)
             const activeTimer = getActiveTimer(tracker);
             setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
@@ -103,9 +103,6 @@ const styles = StyleSheet.create({
         height: 150,
         backgroundColor: COLORS.bgPanelColor,
         overflow: 'hidden',
-        borderColor: 'rgba(255, 255, 255, .4)',
-        borderWidth: 1,
-        borderRadius: SIZES.radius
     },
     entityText: {
         fontSize: 14,
@@ -123,6 +120,6 @@ const styles = StyleSheet.create({
 
 type TaskViewProps = {
     task: Task,
-    tracker: Duration,
+    tracker: Duration | null,
     onUpdateTimeTask: (data: any) => {}
   }

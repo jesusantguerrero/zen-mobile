@@ -3,18 +3,23 @@ import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
-import TaskGroup from '../../components/TaskGroup';
 import AuthContext from '../../utils/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
+import { BarChart, LineChart } from "react-native-chart-kit";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function MetricsScreen({ navigation }) {
-  const [mode, setMode] = useState('zen');
   const { extraData } = useContext(AuthContext);
-
+  const [ data, setData ] = useState({
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 99, 43, 34]
+      }
+    ]
+  })
   const [ todo, setTodo ] = useState([]);
-  const [ selectedList, setSelectedList] = useState([]);
-  const [ selectedMatrix, setSelectedMatrix] = useState({});
   const { getTaskByMatrix } = useTaskFirestore(extraData);
 
   
@@ -34,21 +39,39 @@ export default function MetricsScreen({ navigation }) {
 
   const [matrix, setMatrix] = useState({
     todo: {
-      label: 'Todo',
-      color: COLORS.green[400],
-      list: todo
+      label: 'Started',
+      color: COLORS.blue[400],
+      list: todo,
+      value: 37
     },
     schedule: {
-      label: 'Schedule',
-      color: COLORS.blue[400],
-      list: todo
+      label: 'Finished',
+      color: COLORS.green[300],
+      list: todo,
+      value: 17
     },
     delegate: {
-      label: 'Delegate',
-      color: COLORS.yellow[400],
-      list: todo
+      label: 'Stopped',
+      color: COLORS.red[300],
+      list: todo,
+      value: 20
     },
   })
+  const [generalStats, setGeneralStats] = useState([
+    {
+      label: 'Tasks worked',
+      color: COLORS.green[300],
+      icon: 'sticky-note',
+      value: '11'
+    },
+    {
+      label: 'Time Focused',
+      color: COLORS.blue[400],
+      icon: 'clock',
+      value: '08:45:27'
+    },
+
+  ])
 
   useEffect(() => { 
       const todoRef = getMatrix("todo", setTodo);
@@ -101,7 +124,7 @@ export default function MetricsScreen({ navigation }) {
                 flexWrap: 'wrap',
                 justifyContent: 'space-between',
                 alignContent: 'space-around',
-                backgroundColor: 'white',
+                backgroundColor: COLORS.primary,
                 overflow: 'hidden',
                 borderRadius: SIZES.radius,
                 marginTop: 8
@@ -109,7 +132,7 @@ export default function MetricsScreen({ navigation }) {
             >
               {Object.entries(matrix).map(([listName, list]) => {
                 return (
-                  <TouchableOpacity style={{
+                  <View style={{
                     width: '33%',
                     height: 74,
                     justifyContent: 'center',
@@ -119,10 +142,10 @@ export default function MetricsScreen({ navigation }) {
                   onPress={() => selectMatrix(listName)}
                   >
                     <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
-                  </TouchableOpacity>
+                    <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.value} </Text>
+                  </View>
                 )
               })}
-
             </View>
           </View>
       </View>
@@ -132,7 +155,6 @@ export default function MetricsScreen({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <MatrixHeader></MatrixHeader>
-      <Text style={{ color: 'white', padding: SIZES.padding, paddingBottom: 0 }}> Guilds </Text>
       <View style={{
           padding: SIZES.padding,
       }}>
@@ -143,39 +165,99 @@ export default function MetricsScreen({ navigation }) {
                 flexWrap: 'wrap',
                 justifyContent: 'space-between',
                 alignContent: 'space-around',
-                backgroundColor: 'white',
+                backgroundColor: COLORS.bgPanelColor,
                 overflow: 'hidden',
                 borderRadius: SIZES.radius,
                 marginTop: 8
               }}
             >
-          {Object.entries(matrix).map(([listName, list]) => {
+          {generalStats.map((statLine) => {
             return (
-              <TouchableOpacity style={{
-                width: '33%',
+              <View style={{
+                width: '50%',
                 height: 74,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
-              key={listName}
-              onPress={() => selectMatrix(listName)}
+              key={statLine.value}
               >
-                <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
-              </TouchableOpacity>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <FontAwesome5  name={statLine.icon} size={14} color={statLine.color}></FontAwesome5>
+                  <Text style={{ color: statLine.color, fontWeight: 'bold' }}> {statLine.label} </Text>
+                </View>
+                <Text style={{ color: statLine.color, fontWeight: 'bold' }}> {statLine.value} </Text>
+              </View>
             )
           })}
 
         </View>
       </View>
-      <Text style={{ color: 'white', paddingHorizontal: SIZES.padding }}> Stats </Text>
-      <TaskGroup
-        label={selectedMatrix.label}
-        tasks={selectedList}
-        color={selectedMatrix.color}
-        style={{ marginBottom: 100 }}
-        onPress={() => console.log('hola')}
-      >
-      </TaskGroup>
+      <View style={{ 
+        marginHorizontal: SIZES.padding,
+        borderRadius: SIZES.radius,
+        overflow: 'hidden',
+        backgroundColor: COLORS.bgPanelColor,
+        paddingTop: 14
+      }}>
+        <Text style={{ color: 'white', marginBottom: 14, marginLeft: 24 }}> Pomodoro Stats </Text>
+        <BarChart
+            data={data}
+            width={SIZES.width - (SIZES.padding * 2) - 5}
+            height={220}
+            yAxisLabel="$"
+            chartConfig={{
+              backgroundColor: COLORS.bgPanelColor,
+              backgroundGradientFrom: COLORS.bgPanelColor,
+              backgroundGradientTo: COLORS.bgPanelColor,
+              decimalPlaces: 2, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 16
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726"
+              }
+            }}
+            verticalLabelRotation={30}
+        />
+      </View>
+      <View style={{ 
+        marginHorizontal: SIZES.padding,
+        borderRadius: SIZES.radius,
+        overflow: 'hidden',
+        backgroundColor: COLORS.bgPanelColor,
+        paddingTop: 14,
+        marginVertical: SIZES.padding,
+        marginBottom: 100
+      }}>
+        <Text style={{ color: 'white', marginBottom: 14, marginLeft: 24 }}> Time Tracking Stats </Text>
+        <LineChart
+            data={data}
+            width={SIZES.width - (SIZES.padding * 2) - 2}
+            height={220}
+            yAxisLabel="$"
+            chartConfig={{
+              backgroundColor: COLORS.bgPanelColor,
+              backgroundGradientFrom: COLORS.bgPanelColor,
+              backgroundGradientTo: COLORS.bgPanelColor,
+              decimalPlaces: 2, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 16
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726"
+              }
+            }}
+            verticalLabelRotation={30}
+        />
+      </View>
     </ScrollView>
   );
 }
