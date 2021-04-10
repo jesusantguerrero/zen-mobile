@@ -6,9 +6,11 @@ import AppHeader from '../../components/AppHeader';
 import TaskGroup from '../../components/TaskGroup';
 import AuthContext from '../../utils/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function MatrixScreen({ navigation }) {
-  const [mode, setMode] = useState('zen');
+  const insets = useSafeAreaInsets();
   const { extraData } = useContext(AuthContext);
 
   const [ todo, setTodo ] = useState([]);
@@ -78,7 +80,7 @@ export default function MatrixScreen({ navigation }) {
         <ImageBackground source={images.temple} style={styles.containerHeader}>
           <LinearGradient
             colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)' ]}
-            locations={[0, 0.5, 0.7]}
+            locations={[0, 0.5]}
             style={{
               width: '100%', 
               height: '100%',
@@ -135,7 +137,7 @@ export default function MatrixScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={[styles.container, { paddingTop: insets.top}]}>
       <MatrixHeader></MatrixHeader>
       <View style={{
           marginTop: 100,
@@ -149,7 +151,7 @@ export default function MatrixScreen({ navigation }) {
         >
         </TaskGroup>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -170,6 +172,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: COLORS.gray[400],
+    backgroundColor: COLORS.primary,
   },
 });

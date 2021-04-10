@@ -12,8 +12,6 @@ export default function StandupScreen({ navigation }) {
   const { extraData } = useContext(AuthContext);
 
   const [ todo, setTodo ] = useState([]);
-  const [ selectedList, setSelectedList] = useState([]);
-  const [ selectedMatrix, setSelectedMatrix] = useState({});
   const { getTaskByMatrix } = useTaskFirestore(extraData);
 
   
@@ -91,7 +89,7 @@ export default function StandupScreen({ navigation }) {
             zIndex: 10,
             ...SHADOWS.shadow1
           }}>
-            <Text style={{ color: 'white'}}> Metrics </Text>
+            <Text style={{ color: 'white'}}> Standup </Text>
             <View
               style={{
                 flex: 2,

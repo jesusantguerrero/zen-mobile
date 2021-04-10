@@ -51,7 +51,7 @@ const Slide = ({ item, color }: SlideProps) => {
 }
 
 const separator = () => {
-  return (<View style={{width: '100%', height: 2, backgroundColor: '#efefef', marginVertical: 10 }}></View>)
+  return (<View style={{width: '100%', height: 2, backgroundColor: COLORS.bgPanelColor, marginVertical: 10 }}></View>)
 }
 
 export default function TaskGroup({ label, tasks , onPress, color, style: outerStyles } : TaskGroupProps) {
@@ -61,11 +61,11 @@ export default function TaskGroup({ label, tasks , onPress, color, style: outerS
           marginHorizontal: SIZES.padding,
           padding: 20,
           borderRadius: SIZES.radius,
-          backgroundColor: 'white',
+          backgroundColor: COLORS.bgPanelColor,
           ...SHADOWS.shadow1,
           ...outerStyles
         }}>
-          <Text style={{...FONTS.h2, color: color || COLORS.primary, fontWeight: 'bold' }}> {label || 'Select a list'} </Text>
+          <Text style={{...FONTS.h2, color: color || 'white', fontWeight: 'bold' }}> {label || 'Select a list'} </Text>
           <FlatList
               contentContainerStyle={{
                 marginTop: SIZES.radius
@@ -83,8 +83,8 @@ export default function TaskGroup({ label, tasks , onPress, color, style: outerS
               justifyContent: 'center',
               alignItems: 'center'
             }}>
-               <FontAwesome5 color={COLORS.primary} name='sticky-note' size={24} ></FontAwesome5>
-               <Text style={{ color: COLORS.primary, ...FONTS.h3 }}>There's no items to show </Text>
+               <FontAwesome5 color='white' name='sticky-note' size={24} ></FontAwesome5>
+               <Text style={{ color: 'white', ...FONTS.h3, paddingVertical: 24 }}>There's no items to show </Text>
             </View>}
         </View>
     );

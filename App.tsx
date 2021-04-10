@@ -49,15 +49,6 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1}}>
-      <ImageBackground
-        source={images.temple}
-        style={{
-          width: '100%', 
-          height: '100%',
-          position: 'absolute'
-        }}
-      />
         <StatusBar
           animated={true}
           translucent={true}
@@ -69,7 +60,6 @@ export default function App() {
                 { user ? <HomeNavigator></HomeNavigator> : <AuthNavigator></AuthNavigator>}
             </NavigationContainer>
         </AuthContext.Provider>
-      </SafeAreaView>
     </SafeAreaProvider>
   );
 }

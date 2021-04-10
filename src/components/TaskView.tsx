@@ -49,26 +49,36 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
           </View>}
 
           { !task ? null : 
-          <View style={{ flex: 6, flexDirection: "row", marginTop: 30 , justifyContent: 'space-between', paddingHorizontal: SIZES.padding }}>
-             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome5 key="fa-home" name="stopwatch" size={16} color="white"></FontAwesome5>
-                <Text style={{...FONTS.body4,  color: 'white', textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
-                    { timeTracked }
-                </Text>
-            </View> 
-             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.blue[400]}></FontAwesome5>
-                <Text style={{...FONTS.body4,  color: COLORS.blue[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
-                    Started: { task.tracks.length }
-                </Text>
-            </View> 
-             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.green[400]}></FontAwesome5>
-                <Text style={{...FONTS.body4,  color: COLORS.green[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
-                    Completed: {  task.tracks.filter(track => track.completed).length }
-                </Text>
-            </View> 
-          </View>}
+          <View>
+            <View style={{ flex: 6, flexDirection: "row", marginTop: 30 , justifyContent: 'space-between', paddingHorizontal: SIZES.padding }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <FontAwesome5 key="fa-home" name="stopwatch" size={16} color="white"></FontAwesome5>
+                    <Text style={{...FONTS.body4,  color: 'white', textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
+                        { timeTracked }
+                    </Text>
+                </View> 
+                <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.blue[400]}></FontAwesome5>
+                    <Text style={{...FONTS.body4,  color: COLORS.blue[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
+                        Started: { task.tracks.length }
+                    </Text>
+                </View> 
+                <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <FontAwesome5 key="fa-home" name="stopwatch" size={16} color={COLORS.green[400]}></FontAwesome5>
+                    <Text style={{...FONTS.body4,  color: COLORS.green[400], textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>
+                        Completed: {  task.tracks.filter(track => track.completed).length }
+                    </Text>
+                </View> 
+            </View>
+
+            <View style={{ padding: SIZES.padding }}>
+                { task.checklist.map((item, index) => {
+                    return (<Text style={{color:'white'}}>{index+1} - {item.title}</Text>)
+                })}
+            </View>
+          </View>
+          }
+
 
           <View style={{ 
             backgroundColor: COLORS.bgPanelColor, 
@@ -100,7 +110,7 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        height: 150,
+        minHeight: 150,
         backgroundColor: COLORS.bgPanelColor,
         overflow: 'hidden',
     },

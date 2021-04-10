@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity, ToastAndroid } from 'react-native';
 import TodoScroll from "../../components/ScrollCards";
 import TaskView from "../../components/TaskView";
 import TimeTracker, { TimeTrack } from "../../components/TimeTracker";
@@ -17,6 +17,7 @@ import { Interval } from 'luxon';
 import { ScrollView } from 'react-native-gesture-handler';
 import { format } from 'date-fns';
 import AppSelector from "../../components/AppSelector";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const quadrants = [
   {key: 'todo', label: 'Todo'}, 
@@ -24,11 +25,13 @@ const quadrants = [
 ];
 
 export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
+  const insets = useSafeAreaInsets();
+
   const { extraData } = useContext(AuthContext);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [currentTrack, setCurrentTrack] = useState<TimeTrack | null>(null);
   const [showLineUp, setShowLineUp] = useState(false);
-  const [ matrix, setMatrix ] = useState('schedule')
+  const [ matrix, setMatrix ] = useState('focused')
   const [ showMatrix, setShowMatrix ] = useState(false)
   const [ todo, setTodo ] = useState([])
   const [ schedule, setSchedule ] = useState([])
@@ -143,20 +146,23 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   }
 
   return (
-    <ImageBackground source={images.temple} style={styles.container}>
+    <ImageBackground source={images.temple} style={[styles.container, { paddingTop: insets.top, position: 'relative' }]}>
       <LinearGradient
         colors={['rgba(58, 74, 115, .5)', 'rgba(58, 74, 115, .8)', COLORS.primary ]}
         locations={[0, 0.5, 0.7]}
         style={{
+          flex: 1,
           width: '100%', 
-          height: '100%',
-          position: 'absolute'
+          height: SIZES.height,
+          position: 'absolute',
+          marginTop: insets.top,
+          paddingBottom: insets.bottom
         }}
       />
-      <ScrollView style={{ width: '100%'}}>
+      <ScrollView style={{ width: '100%', flex: 1 }}>
         <AppHeader navigation={navigation} user={extraData}></AppHeader>
         <View style={{width: '100%', paddingHorizontal: SIZES.padding, paddingBottom: SIZES.padding }}>
-          <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { extraData?.displayName || extraData?.email }</Text>
+          <Text style={{...FONTS.h3, color: 'white', fontWeight: 'bold'}}>Welcome, { 'Jesus sempai' || extraData?.email }</Text>
         </View>
         <View style={{ flex: 3, justifyContent: "center", alignItems: "center", maxHeight: 250, marginBottom: 40 }}>
           <TimeTracker 
@@ -174,33 +180,71 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
             paddingHorizontal: SIZES.padding
             
           }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ ...FONTS.h3, color: 'white' }}> {showLineUp ? 'Lineup:' : 'Focused'} </Text>
-              { showLineUp && 
-                <AppSelector
-                    testID="pckMatrix"
-                    value={matrix}
-                    data={quadrants}
-                    onClose={() => {setShowMatrix(false)}}
-                    onChange={(value: "todo" | "schedule") =>
-                      setMatrix(value)
-                    } 
-                >
-                </AppSelector>
-              }
+            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+              <View style={{width: '100%'}}>
+                  <View style={{ 
+                    backgroundColor: COLORS.primary, 
+                    justifyContent: 'center', 
+                    borderRadius: SIZES.radius, 
+                    flexDirection: 'row', 
+                    borderColor: 'white', 
+                    borderWidth: 1,
+                    overflow: 'hidden',
+                    width: '100%',
+                    flex: 1
+                  }}>
+                    <TouchableOpacity
+                       style={{ 
+                         height: 40, 
+                         width: 100,
+                         flex: 1,
+                         alignItems: 'center', 
+                         justifyContent: 'center', 
+                         paddingHorizontal: SIZES.padding / 2 , 
+                         backgroundColor: matrix == 'focused' ? COLORS.bgPanelColor : 'transparent'
+                        }}
+                        onPress={() => { setMatrix('focused')}}
+                        >
+                      <Text style={{ color: 'white'}}>Focused</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                       style={{ 
+                         height: 40, 
+                         flex: 1,
+                         width: 100,
+                         alignItems: 'center', 
+                         justifyContent: 'center', 
+                         paddingHorizontal: SIZES.padding / 2 , 
+                         backgroundColor: matrix == 'todo' ? COLORS.bgPanelColor : 'transparent'
+                        }}
+                        onPress={() => { setMatrix('todo')}}
+                        >
+                      <Text style={{ color: 'white'}}>Todo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={{ 
+                        height: 40, 
+                        flex: 1,
+                        width: 100,
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        paddingHorizontal: SIZES.padding / 2,
+                        backgroundColor: matrix == 'schedule' ? COLORS.bgPanelColor : 'transparent'
+                      }}
+                      onPress={() => { setMatrix('schedule')}}
+                      >
+                        <Text style={{ color: 'white'}}> Schedule</Text>
+                    </TouchableOpacity>
+                  </View>
+              </View>
             </View>
-
-          <TouchableOpacity
-            onPress={() => setShowLineUp(!showLineUp)}
-          >
-            <Text style={{ ...FONTS.h3, color: COLORS.green[400] }}> {showLineUp ? 'Hide Lineup' : 'Show Lineup'} </Text>
-          </TouchableOpacity>
         </View>
-        {!showLineUp && currentTask ? 
+       
           <Animated.View style={{
             width: '100%', 
             paddingVertical: SIZES.padding,
           }}>
+             {matrix == 'focused' ? 
             <ScrollCard index={1} item={currentTask} 
               onRemove={() => {
 
@@ -223,26 +267,18 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
                   task.commit_date = format(new Date(), 'yyyy-MM-dd');
                   task.done = true;
                   updateTask(task).then(() => {
-                    if (todo.length) {
-                      setCurrentTask(todo[0]);
-                    } else {
-                      setCurrentTask(null);
-                    }
+                    ToastAndroid.show('Task completed', ToastAndroid.SHORT)
                   })
 
               }}
               >
               <TaskView task={currentTask} tracker={tracker} onUpdateTimeTask={(data) => updateTask(data)}></TaskView>
             </ScrollCard>
-            
+            : <TodoScroll
+              items={matrix == 'todo' ? todo : schedule} 
+              onPress={setMainTask}
+            />}    
           </Animated.View>
-          : 
-          <TodoScroll
-            items={matrix == 'todo' ? todo : schedule} 
-            onPress={setMainTask}
-          />      
-        }
-
       </ScrollView>
     </ImageBackground>
   );

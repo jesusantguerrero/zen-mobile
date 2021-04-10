@@ -8,14 +8,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BarChart, LineChart } from "react-native-chart-kit";
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MetricsScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { extraData } = useContext(AuthContext);
   const [ data, setData ] = useState({
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43, 34]
+        data: [8, 4, 6, 13, 10, 10, 10]
       }
     ]
   })
@@ -112,8 +114,7 @@ export default function MetricsScreen({ navigation }) {
             paddingHorizontal: SIZES.padding,
             position: 'absolute',
             elevation: 9,
-            zIndex: 10,
-            ...SHADOWS.shadow1
+            zIndex: 10
           }}>
             <Text style={{ color: 'white'}}> Metrics </Text>
             <View
@@ -153,7 +154,7 @@ export default function MetricsScreen({ navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 100}]}>
       <MatrixHeader></MatrixHeader>
       <View style={{
           padding: SIZES.padding,
@@ -204,7 +205,7 @@ export default function MetricsScreen({ navigation }) {
             data={data}
             width={SIZES.width - (SIZES.padding * 2) - 5}
             height={220}
-            yAxisLabel="$"
+            yAxisLabel=""
             chartConfig={{
               backgroundColor: COLORS.bgPanelColor,
               backgroundGradientFrom: COLORS.bgPanelColor,
@@ -238,7 +239,7 @@ export default function MetricsScreen({ navigation }) {
             data={data}
             width={SIZES.width - (SIZES.padding * 2) - 2}
             height={220}
-            yAxisLabel="$"
+            yAxisLabel=""
             chartConfig={{
               backgroundColor: COLORS.bgPanelColor,
               backgroundGradientFrom: COLORS.bgPanelColor,
