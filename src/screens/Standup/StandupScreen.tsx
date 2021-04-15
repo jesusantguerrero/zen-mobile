@@ -1,63 +1,52 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, ScrollView, Pressable } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
-import TaskGroup from '../../components/TaskGroup';
 import AuthContext from '../../utils/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView } from 'react-native-gesture-handler';
+import ScrollCards from "../../components/ScrollCards";
+import { StandupScreenProps } from '../../navigators/main';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function StandupScreen({ navigation }) {
+export default function StandupScreen({ navigation }: StandupScreenProps ) {
   const { extraData } = useContext(AuthContext);
 
-  const [ todo, setTodo ] = useState([]);
-  const { getTaskByMatrix } = useTaskFirestore(extraData);
+  const [ comitted, setComitted ] = useState<any[]>([]);
+  const [ searchState, setSearchState ] = useState({
+    date: new Date(),
+    text: '',
+    tags: [],
+    showDatePicker: false
+  });
 
-  
-  const getMatrix = (matrix: string, callback) => {
-      getTaskByMatrix(matrix).then((collectionRef) => {
-      const unsubscribe = collectionRef.onSnapshot((snap) => {
-        const results = [];
-        snap.forEach((doc) => {
-          results.push({ ...doc.data(), uid: doc.id });
-        });
-        callback(results)
-      });
-  
-      return unsubscribe;
-    });
-  };
+  const { getCommitedTasks } = useTaskFirestore();
+  const fetchCommitted = () => {
+    getCommitedTasks(searchState.date).then(tasks => {
+      setComitted(tasks);
+    })
+  }
 
   const [matrix, setMatrix] = useState({
-    todo: {
-      label: 'Todo',
-      color: COLORS.green[400],
-      list: todo
-    },
-    schedule: {
-      label: 'Schedule',
-      color: COLORS.blue[400],
-      list: todo
-    },
-    delegate: {
-      label: 'Delegate',
-      color: COLORS.yellow[400],
-      list: todo
+    comitted: {
+      label: 'comitted',
+      color: COLORS.gray[400],
     },
   })
 
-  useEffect(() => { 
-      const todoRef = getMatrix("todo", setTodo);
-  }, [])
-
-  const selectMatrix = (matrixName: string) => {
-    const selectedMatrix = matrix[matrixName];
-    if (selectedMatrix) {
-      setSelectedList(todo)
-      setSelectedMatrix(selectedMatrix)
+  const onChangeDate = (date) => {
+    if (date) {
+      setSearchState({...searchState, date: date, showDatePicker: false})
+    } else {
+      setSearchState({...searchState, showDatePicker: false})
     }
   }
+
+
+  useEffect(() => { 
+      const comittedRef = fetchCommitted();
+  }, [])
+
 
   const MatrixHeader = () => {
     return (
@@ -85,9 +74,7 @@ export default function StandupScreen({ navigation }) {
             width: '100%',
             paddingHorizontal: SIZES.padding,
             position: 'absolute',
-            elevation: 9,
             zIndex: 10,
-            ...SHADOWS.shadow1
           }}>
             <Text style={{ color: 'white'}}> Standup </Text>
             <View
@@ -113,7 +100,6 @@ export default function StandupScreen({ navigation }) {
                     alignItems: 'center',
                   }}
                   key={listName}
-                  onPress={() => selectMatrix(listName)}
                   >
                     <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
                   </TouchableOpacity>
@@ -130,39 +116,35 @@ export default function StandupScreen({ navigation }) {
     <ScrollView style={styles.container}>
       <MatrixHeader></MatrixHeader>
       <Text style={{ color: 'white', padding: SIZES.padding, paddingBottom: 0 }}> Guilds </Text>
+      <Pressable 
+        onPress={() => setSearchState({
+          ...searchState, showDatePicker: true
+        })}
+      >
+        <Text style={{ color: 'white'}}>
+            Set Date
+        </Text>
+      </Pressable>
+      {searchState.showDatePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={searchState.date}
+          mode='date'
+          is24Hour={true}
+          display="default"
+          textColor="red"
+          onChange={onChangeDate}
+        />
+      )}
       <View style={{
-          padding: SIZES.padding,
+          paddingVertical: SIZES.padding,
       }}>
-        <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-                alignContent: 'space-around',
-                backgroundColor: 'white',
-                overflow: 'hidden',
-                borderRadius: SIZES.radius,
-                marginTop: 8
-              }}
-            >
-          {Object.entries(matrix).map(([listName, list]) => {
-            return (
-              <TouchableOpacity style={{
-                width: '33%',
-                height: 74,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              key={listName}
-              onPress={() => selectMatrix(listName)}
-              >
-                <Text style={{ color: list.color, fontWeight: 'bold' }}> {list.label} </Text>
-              </TouchableOpacity>
-            )
-          })}
+        <ScrollCards
+          items={comitted}
+          onPress={() => {}}
+        >
 
-        </View>
+        </ScrollCards>
       </View>
     </ScrollView>
   );
@@ -179,7 +161,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     overflow: 'hidden',
-     ...SHADOWS.shadow1,
      marginBottom: 200
   },
   container: {

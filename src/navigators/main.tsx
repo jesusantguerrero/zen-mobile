@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { createBottomTabNavigator,BottomTabBar, BottomTabBarProps, BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { BlurView } from 'expo-blur';
-import {  ZenboardScreen, MatrixScreen, MetricsScreen, HomeScreen } from "../screens";
+import {  ZenboardScreen, MatrixScreen, MetricsScreen, StandupScreen} from "../screens";
 import TabBarIcon from "../components/TabBarIcon";
 import TabBarIconSpecial from "../components/TabBarIconSpecial";
 import QuickAdd from "../components/QuickAdd";
@@ -68,11 +68,11 @@ export default function MainStackScreen() {
               component={ZenboardScreen}
             />
             <Tab.Screen 
-              name="Home" 
+              name="Standup" 
               options={{
                 tabBarIcon: (props) => <TabBarIcon {...props} icon="history" label="Standup"></TabBarIcon>
               }}
-              component={HomeScreen}
+              component={StandupScreen}
             />
             <Tab.Screen 
               name="NewItem" 
@@ -107,7 +107,12 @@ export type MainStackParamList = {
 }
 
 type ZenboardScreenNavigationProp = BottomTabNavigationProp<MainStackParamList,'Zenboard'>;
+type StandupScreenNavigationProp = BottomTabNavigationProp<MainStackParamList,'Home'>;
 
 export type ZenboardScreenProps = {
   navigation: ZenboardScreenNavigationProp
+}
+
+export type StandupScreenProps = {
+  navigation: StandupScreenNavigationProp
 }

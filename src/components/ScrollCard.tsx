@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Animated, TouchableOpacity, Task, Alert } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -19,7 +19,7 @@ const matrixColors = {
     backgroundColor: COLORS.red[400]
   }
 }
-const LeftActions = (drag: Animated.AnimatedInterpolation, onPress: Function) => {
+const LeftActions = (progress, drag: Animated.AnimatedInterpolation, onPress: Function) => {
   const scale = drag.interpolate && drag.interpolate({
     inputRange: [0, 80],
     outputRange: [0, 1],
@@ -27,15 +27,46 @@ const LeftActions = (drag: Animated.AnimatedInterpolation, onPress: Function) =>
   });
 
   return (
-    <RectButton style={styles.leftAction} onPress={onPress}>
-      <Animated.View style={[styles.actionIcon,  { transform: [{ scale }]}]}>
-        <FontAwesome5  name="check-circle" size={32} color="white"></FontAwesome5>
-      </Animated.View>
-    </RectButton>
+    <View style={{
+      width: '100%',
+      flexDirection: 'row-reverse'
+    }}>
+      <RectButton style={styles.leftAction} onPress={onPress}>
+        <Animated.View style={[styles.actionIcon,  { transform: [{ scale }], justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.blue[400], flex: 1, height: '100%'}]}>
+          <FontAwesome5  name="border-all" size={32} color="white"></FontAwesome5>
+          <Text style={{ color: 'white', marginTop: 8}}>Change Matrix</Text>
+        </Animated.View>
+      </RectButton>
+
+      <RectButton style={styles.leftAction} onPress={onPress}>
+        <Animated.View style={[styles.actionIcon,  { transform: [{ scale }], justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.green[400], flex: 1, height: '100%'}]}>
+          <FontAwesome5  name="check-circle" size={32} color="white"></FontAwesome5>
+          <Text style={{ color: 'white', marginTop: 8}}>Mark as Done</Text>
+        </Animated.View>
+      </RectButton>
+    </View>
   );
 };
 
-const RightActions = (drag: Animated.AnimatedInterpolation, onPress: Function) => {
+const actionItem = (text: string, icon: string, color: string, x: number, progress: Animated.AnimatedInterpolation, onPress: Function) => {
+  const trans = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [x, 0],
+  });
+
+  return (
+    <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
+      <RectButton
+        style={[{alignItems: 'center', flex: 1, justifyContent: 'center',}, { backgroundColor: color }]}
+        onPress={onPress}>
+          <FontAwesome5  name={icon} size={32} color="white"></FontAwesome5>
+          <Text style={{ color: 'white', marginTop: 8}}>{text}</Text>
+      </RectButton>
+    </Animated.View>
+  );
+}
+
+const RightActions = (progress, drag: Animated.AnimatedInterpolation, onPress: Function) => {
   const scale = drag.interpolate && drag.interpolate({
     inputRange: [-80, 0],
     outputRange: [1, 0],
@@ -43,15 +74,18 @@ const RightActions = (drag: Animated.AnimatedInterpolation, onPress: Function) =
   });
 
   return (
-    <RectButton style={styles.rightAction} onPress={onPress}>
-      <Animated.View style={[styles.actionIcon, { transform: [{ scale }]}]}>
-      <FontAwesome5  name="trash" size={32} color="white"></FontAwesome5>
-      </Animated.View>
-    </RectButton>
+    <View style={{
+      width: '100%',
+      flexDirection: 'row'
+    }} onPress={onPress}>
+      {actionItem('Delete','trash', COLORS.red[400], 192, progress)}
+      {actionItem('Due Date','calendar', COLORS.blue[400], 128, progress)}
+      {actionItem('Tag', 'tags', COLORS.gray[400], 64, progress)}
+    </View>
   );
 };
 
-export default function ScrollCard({ item, index, onFocus, onDone, onRemove, children }) {  
+export default function ScrollCard({ item, index, onPress, onDone, onRemove, children }: {item: Task, index: number, onPress: Function, onDone: Function, onRemove: Function, children: any[]}) {  
     const swipeableRef = useRef<Swipeable>()
 
     const close = () => {
@@ -69,10 +103,6 @@ export default function ScrollCard({ item, index, onFocus, onDone, onRemove, chi
       onRemove && onRemove(item)
     }
 
-    const setFocus = () => {
-      onFocus()
-    }
-
     return (
         <Swipeable
             ref={swipeableRef}
@@ -80,8 +110,8 @@ export default function ScrollCard({ item, index, onFocus, onDone, onRemove, chi
             leftThreshold={80}
             enableTrackpadTwoFingerGesture
             rightThreshold={40}
-            renderLeftActions={ (_progress, drag) => LeftActions(drag, markAsRead)}
-            renderRightActions={(_progress, drag) => RightActions(drag, removeTask)}
+            renderLeftActions={ (progress, drag) => LeftActions(progress, drag, markAsRead)}
+            renderRightActions={(progress, drag) => RightActions(progress, drag, removeTask)}
         >
           { children ? children :
           <View
@@ -105,7 +135,7 @@ export default function ScrollCard({ item, index, onFocus, onDone, onRemove, chi
                       height: 40
                     }}>
                       <View style={{
-                          backgroundColor: matrixColors[item.matrix].backgroundColor, 
+                          backgroundColor: item.done ? COLORS.gray[400] : matrixColors[item.matrix].backgroundColor, 
                           height: 24, 
                           width: 24 , 
                           borderRadius: 4,
@@ -120,7 +150,7 @@ export default function ScrollCard({ item, index, onFocus, onDone, onRemove, chi
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', height: 40 }}>
                     <View style={{ flexDirection: 'row'}}>
                       <FontAwesome5 key="fa-home" name="stopwatch" size={16} color="white"></FontAwesome5>
-                      <Text style={{ ...styles.bodyText, color: COLORS.gray[400], marginLeft: 5 }}>{item.duration_ms}</Text>
+                      <Text style={{ ...styles.bodyText, color: COLORS.gray[400], marginLeft: 5 }}>{item.duration_ms || '00:00:00'}</Text>
                     </View>
                   </View>
               </View>
@@ -138,9 +168,11 @@ export default function ScrollCard({ item, index, onFocus, onDone, onRemove, chi
                 width: '100%',
                 paddingVertical: 8
               }}>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => onPress(item)}>
                   <FontAwesome5  name="check-circle" size={14} color="white"></FontAwesome5>
-                  <Text style={{...styles.body, marginLeft: 3, color: 'white'}}> Mark as done </Text>
+                  <Text style={{...styles.body, marginLeft: 3, color: 'white'}}>
+                    { item.done ? 'Undo' : 'Mark as Done'}
+                  </Text>
                 </TouchableOpacity>
           
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -187,21 +219,19 @@ const styles = StyleSheet.create({
     color: "#222",
     fontSize: 14,
   },
-    actionIcon: {
-      marginHorizontal: 10,
-    },
-    rightAction: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      backgroundColor: COLORS.red[400],
-      flex: 1,
-      justifyContent: 'flex-end',
-    },
-    leftAction: {
-      flex: 1,
-      backgroundColor: COLORS.green[400],
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      flexDirection: 'row-reverse',
-    }
+  rightAction: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: COLORS.red[400],
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  leftAction: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: COLORS.green[400],
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row-reverse',
+  }
 })

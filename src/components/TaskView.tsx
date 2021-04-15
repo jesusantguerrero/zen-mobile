@@ -12,7 +12,7 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
     const [timeTracked, setTimeTracked] = useState("00:00:00");
 
     const timeReducer = (tracks: any[]) => {
-        if (!tracks) return 0
+        if (!tracks) return task.duration_ms || 0;
         return tracks.reduce((milliseconds, track)=> {
             const duration = track.duration_ms ? Number(track.duration_ms) : 0
             return milliseconds + duration;
@@ -31,6 +31,8 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
             const savedTime = timeReducer(task.tracks)
             const activeTimer = getActiveTimer(tracker);
             setTimeTracked(formatDurationFromMs(savedTime + activeTimer).toFormat("hh:mm:ss"));
+        } else if (task) {
+            setTimeTracked(formatDurationFromMs(Number(task.duration || 0)).toFormat('hh:mm:ss'));
         }
     }, [tracker, task])
 
@@ -50,7 +52,7 @@ export default function TaskView({ task, tracker, onUpdateTimeTask }: TaskViewPr
 
           { !task ? null : 
           <View>
-            <View style={{ flex: 6, flexDirection: "row", marginTop: 30 , justifyContent: 'space-between', paddingHorizontal: SIZES.padding }}>
+            <View style={{ flex: 6, flexDirection: "row", marginTop: 10 , justifyContent: 'space-between', paddingHorizontal: SIZES.padding }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                     <FontAwesome5 key="fa-home" name="stopwatch" size={16} color="white"></FontAwesome5>
                     <Text style={{...FONTS.body4,  color: 'white', textAlign: 'left', marginLeft: 5, fontWeight: 'bold' }}>

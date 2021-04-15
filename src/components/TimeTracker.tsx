@@ -35,24 +35,21 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
                 label: "Long Rest",
                 min: 15,
                 sec: 0,
-                color: "text-green-400",
-                colorBg: "bg-green-400",
-                colorBorder: "border-green-400",
+                color: COLORS.green[400],
+                text: "Take a longer brake",
             },
             promodoro: {
+                label: 'Pomodoro',
                 min: 25,
                 sec: 0,
-                color: "text-red-400",
-                colorBg: "bg-red-400",
-                colorBorder: "border-red-400",
+                color: COLORS.red[400],
                 text: "Pomodoro session",
             },
             rest: {
+                label: 'Rest',
                 min: 5,
                 sec: 0,
-                color: "text-blue-400",
-                colorBg: "bg-blue-400",
-                colorBorder: "border-blue-400",
+                color: COLORS.blue[400],
                 text: "Take a short break",
             },
         },
@@ -80,10 +77,14 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
         }
     }, [track.started_at])
 
+    const [trackerMode, setTrackerMode] = useState(state.modes.promodoro);
+
+    useEffect(() => {
+        setTrackerMode(state.modes[state.mode] || state.modes.promodoro)
+    }, [state.mode])
+
     // ui
     const trackerIcon = () => state.now ? 'stop': 'play';
-    const trackerText = () => state.now ? 'Stop': 'Start';
-    const trackerMode = () => state.modes[state.mode];
 
 
     // Time manipulation
@@ -204,9 +205,19 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
         }   
     };
     
+    const previousMode = () => {
+        if (state.now) {
+            stop(false);
+        }
+    
+        const canDecrement = state.currentStep > 0;
+        const nextMode = canDecrement ? state.currentStep - 1 : 0;
+        setState({...state, mode: state.template[nextMode], currentStep: nextMode });
+        setDurationTarget();
+    };
     const nextMode = () => {
         if (state.now) {
-        stop(false);
+            stop(false);
         }
     
         const canIncrement = state.currentStep < state.template.length - 1;
@@ -216,40 +227,62 @@ export default function TimeTracker({ task, onPomodoroStarted, onPomodoroStopped
     };
 
     return (
-        <TouchableOpacity style={styles.entityContainer}   
-            testID='btnPlay'
-            onPress={() => toggleTracker()}
-        >
-                <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
-                    <Text style={styles.clockText} testID='txtTime'>
-                        {currentTime}
-                    </Text> 
-                </View>
-                <View 
+        <>
+            <Text style={{ color: trackerMode.color, ...FONTS.h2, fontWeight: 'bold' }}> { trackerMode.label }: </Text>
+            <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold', marginBottom: SIZES.padding / 3 }}> { trackerMode.text }! </Text>
+            <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                width: '100%',
+            }}>
+                {/* Left Arrow */}
+                <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '33%', opacity: state.currentStep == 0 ? 0.3 : 1 }} onPress={() => previousMode()}>
+                    <FontAwesome5 name="chevron-left" color="white" size={40}></FontAwesome5>
+                </TouchableOpacity>
+
+                {/* Clock */}
+                <TouchableOpacity style={styles.entityContainer}   
                     testID='btnPlay'
-                    style={{ 
-                            flex: 1,
-                            justifyContent: "center",
-                            alignItems: 'center',
-                            flexDirection: "row", 
-                            borderRadius: SIZES.radius + 2,
-                            maxHeight: 40,
-                            minHeight: 40,
-                            padding: 10,
-                            width: 100
-                    }}
-                  
+                    onPress={() => toggleTracker()}
                 >
-                    <FontAwesome5 name={trackerIcon()} color="white" size={30}></FontAwesome5>
+                    <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "flex-end", maxHeight: 100 }}>
+                        <Text style={styles.clockText} testID='txtTime'>
+                            {currentTime}
+                        </Text> 
+                    </View>
+                    <View 
+                        testID='btnPlay'
+                        style={{ 
+                                flex: 1,
+                                justifyContent: "center",
+                                alignItems: 'center',
+                                flexDirection: "row", 
+                                borderRadius: SIZES.radius + 2,
+                                maxHeight: 40,
+                                minHeight: 40,
+                                padding: 10,
+                                width: 100,
+                        }}
+                    >
+                        <FontAwesome5 name={trackerIcon()} color="white" size={30}></FontAwesome5>
+                    </View>
+                </TouchableOpacity>
+
+                {/* Left arrow */}
+
+                <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '33%' }} onPress={() => nextMode()}>
+                    <FontAwesome5 name="chevron-right" color="white" size={40}></FontAwesome5>
+                </TouchableOpacity>
             </View>
-        </TouchableOpacity>
+            <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold', marginTop: SIZES.padding / 2 }}> Round: { trackerMode.text }! </Text>
+        </>
     )
 }
 
 
 const styles = StyleSheet.create({
     entityContainer: {
-        marginTop: 16,
         width: "100%",
         textAlign: "center",
         justifyContent:"center",
@@ -261,7 +294,7 @@ const styles = StyleSheet.create({
         minWidth: 200,
         maxHeight: 200,
         height: 200,
-        padding: SIZES.padding,
+        paddingVertical: SIZES.padding,
         borderColor: 'white',
         overflow: 'hidden',
         backgroundColor: 'rgba(0, 0, 0, 0.2)'
@@ -335,6 +368,7 @@ type TimeTrackerMode = {
     color: string,
     colorBg: string,
     colorBorder: string,
+    text: string
 }
 
 type TimeTrackerConfig = {

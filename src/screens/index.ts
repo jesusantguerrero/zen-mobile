@@ -1,5 +1,5 @@
 import ZenboardScreen from "./Zenboard/ZenboardScreen"
-import HomeScreen from "./Home/HomeScreen"
+import StandupScreen from "./Standup/StandupScreen"
 import MetricsScreen from "./Metrics/MetricsScreen"
 import MatrixScreen from "./Matrix/MatrixScreen"
 import LoginScreen from "./Auth/LoginScreen"
@@ -9,7 +9,7 @@ export {
     LoginScreen,
     RegistrationScreen,
     ZenboardScreen,
-    HomeScreen,
+    StandupScreen,
     MatrixScreen,
     MetricsScreen,
 }
