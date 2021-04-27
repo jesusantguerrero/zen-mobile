@@ -1,0 +1,36 @@
+Complete Home Design:
+
+Cards:
+    - Add calendar
+    - Tag filter
+
+Standup
+    - Search
+    - Tag filter
+    - Render Done tasks
+    
+Task View/Edit
+    - Render pomodoro data.
+
+
+Zenboard:
+
+    - Pantalla de Edit*
+    - Reordenar las listas a la inversa
+    - placeholder to unselected task
+    - placeholder to empty list
+
+    TimeTracker:
+        - Indicar la ronda.
+        - Dont dispatch pomodoro w/o task selected
+
+    TaskView    
+        - Sincronizar al segundo Tracker con TAskview
+        - Eliminar delay de update de tiempo: Clonando el task en local
+        - Renderizar el checklist
+        - Renderizar los tags
+
+    Agregar las Acciones del Scrollcard
+        - Pick a date
+        - Change Matrix
+        - Edit tags

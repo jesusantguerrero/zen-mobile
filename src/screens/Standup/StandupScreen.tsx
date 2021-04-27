@@ -8,6 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ScrollCards from "../../components/ScrollCards";
 import { StandupScreenProps } from '../../navigators/main';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import WeekPager from '../../components/WeekPager';
 
 export default function StandupScreen({ navigation }: StandupScreenProps ) {
   const { extraData } = useContext(AuthContext);
@@ -21,6 +22,7 @@ export default function StandupScreen({ navigation }: StandupScreenProps ) {
   });
 
   const { getCommitedTasks } = useTaskFirestore();
+
   const fetchCommitted = () => {
     getCommitedTasks(searchState.date).then(tasks => {
       setComitted(tasks);
@@ -34,7 +36,7 @@ export default function StandupScreen({ navigation }: StandupScreenProps ) {
     },
   })
 
-  const onChangeDate = (date) => {
+  const onChangeDate = (date: Date) => {
     if (date) {
       setSearchState({...searchState, date: date, showDatePicker: false})
     } else {
@@ -45,7 +47,7 @@ export default function StandupScreen({ navigation }: StandupScreenProps ) {
 
   useEffect(() => { 
       const comittedRef = fetchCommitted();
-  }, [])
+  }, [searchState.date])
 
 
   const MatrixHeader = () => {
@@ -116,15 +118,9 @@ export default function StandupScreen({ navigation }: StandupScreenProps ) {
     <ScrollView style={styles.container}>
       <MatrixHeader></MatrixHeader>
       <Text style={{ color: 'white', padding: SIZES.padding, paddingBottom: 0 }}> Guilds </Text>
-      <Pressable 
-        onPress={() => setSearchState({
-          ...searchState, showDatePicker: true
-        })}
-      >
-        <Text style={{ color: 'white'}}>
-            Set Date
-        </Text>
-      </Pressable>
+
+      <WeekPager onDayChanged={onChangeDate}> </WeekPager>
+
       {searchState.showDatePicker && (
         <DateTimePicker
           testID="dateTimePicker"
