@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Animated, ImageBackground, TouchableOpacity, To
 import { LinearGradient } from "expo-linear-gradient";
 import { Interval } from 'luxon';
 import { format } from 'date-fns';
-import firebase from 'firebase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScrollCards from "../../components/ScrollCards";
 import TaskView from "../../components/TaskView";
@@ -11,7 +10,7 @@ import TimeTracker, { TimeTrack } from "../../components/TimeTracker";
 import ScrollCard from "../../components/ScrollCard";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { useTrackFirestore } from "../../utils/useTrackFirestore";
-import { images, SIZES, FONTS, COLORS } from "../../config/constants";
+import { images, SIZES, COLORS } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import AuthContext from '../../utils/AuthContext';
 import { Task } from '../../utils/data';
@@ -32,9 +31,8 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
   const getMatrix = (matrix: string, callback: Function): null|Function => {
     let unsubscribe: null|Function = null;
       if (extraData) {
-        
-        getTaskByMatrix(matrix).then((collectionRef: firebase.firestore.Query) => {
-          unsubscribe = collectionRef.onSnapshot((snap) => {
+        const collectionRef = getTaskByMatrix(matrix);
+        unsubscribe = collectionRef.onSnapshot((snap) => {
             const results:Array<Task> = [];
             snap.forEach((doc) => {
               const data = doc.data();
@@ -46,7 +44,6 @@ export default function ZenboardScreen( { navigation }: ZenboardScreenProps ) {
               setMainTask(selectedTask);
             }
             callback(results)
-          });
         });
       }
     return unsubscribe;

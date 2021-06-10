@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View,  ImageBackground } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
@@ -9,6 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { BarChart, LineChart } from "react-native-chart-kit";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Task } from '../../utils/data';
 
 export default function MetricsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -22,21 +23,18 @@ export default function MetricsScreen({ navigation }) {
     ]
   })
   const [ todo, setTodo ] = useState([]);
-  const { getTaskByMatrix } = useTaskFirestore(extraData);
+  const { getTaskByMatrix, mapTask } = useTaskFirestore(extraData);
 
   
   const getMatrix = (matrix: string, callback) => {
-      getTaskByMatrix(matrix).then((collectionRef) => {
-      const unsubscribe = collectionRef.onSnapshot((snap) => {
-        const results = [];
+      const collectionRef = getTaskByMatrix(matrix)
+      return collectionRef.onSnapshot((snap) => {
+        const results:Array<Task> = [];
         snap.forEach((doc) => {
-          results.push({ ...doc.data(), uid: doc.id });
+          results.push(mapTask(doc.data(), doc.id));
         });
         callback(results)
       });
-  
-      return unsubscribe;
-    });
   };
 
   const [matrix, setMatrix] = useState({
@@ -77,6 +75,10 @@ export default function MetricsScreen({ navigation }) {
 
   useEffect(() => { 
       const todoRef = getMatrix("todo", setTodo);
+
+      return () => {
+        todoRef()
+      }
   }, [])
 
   const selectMatrix = (matrixName: string) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import TimeTracker from '../src/components/TimeTracker.tsx';
 import { act } from 'react-test-renderer';
-import { advanceBy, advanceTo, clear } from 'jest-date-mock';
+import { advanceBy, clear } from 'jest-date-mock';
 
 const task = {
   uid: undefined,

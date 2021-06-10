@@ -150,8 +150,8 @@ export default function QuickAdd ({ onSave, onCancel, user}: QuickAddProps) {
           <TouchableOpacity onPress={onCancel}>
               <Text style={{color: COLORS.red[400], fontWeight: 'bold'}}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 15, backgroundColor: COLORS.green[600], height: 40, width: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 35 }}  onPress={() => { saveTask() }}>
-              <FontAwesome5 color='white' name='paper-plane' size={20} ></FontAwesome5>
+          <TouchableOpacity onPress={() => { saveTask() }}>
+              <Text style={{color: COLORS.green[400], fontWeight: 'bold', marginLeft: 5 }}>Save</Text>
           </TouchableOpacity>
         </View>
       </View>

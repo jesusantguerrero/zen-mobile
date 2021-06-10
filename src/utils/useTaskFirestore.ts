@@ -90,22 +90,15 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getUncommitedTasks = async (date: string, userUuid: string) => {
-        const tasks:Task[] = [];
-        await db.collection(collectionName)
+    const getUncommitedTasks = (userUuid: string) => {
+        return  db.collection(collectionName)
         .where("user_uid", "==", userUuid || user.uid)
         .where("done", "==", false)
         .orderBy("order")
-        .get()
-        .then((querySnapshot: firebase.firestore.QuerySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                tasks.push(mapTask(doc.data(), doc.id ));
-            });
-        })
-        return tasks;
+       
     }
 
-    const getTaskByMatrix = async (matrix: string) => {
+    const getTaskByMatrix = (matrix: string) => {
         const matrixRef = db.collection(collectionName)
             .where("user_uid", "==", user.uid)
             .where("done", "==", false)

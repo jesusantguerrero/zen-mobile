@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, ScrollView, Pressable } from 'react-native';
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { SHADOWS, COLORS, SIZES, images } from "../../config/constants";
+import { COLORS, SIZES, images } from "../../config/constants";
 import AppHeader from '../../components/AppHeader';
 import AuthContext from '../../utils/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
