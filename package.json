@@ -38,7 +38,7 @@
     "firebase": "7.9.0",
     "formik": "^2.2.6",
     "jest-date-mock": "^1.0.8",
-    "luxon": "^1.26.0",
+    "luxon": "^1.28.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "~0.64.1",
